@@ -30,9 +30,9 @@ Currently, the import of ICP-MS raw data from four different instrument types is
 ```{r import}
 library(ETVapp)
 wf <- "ExtCal"
-td <- ETVapp::ETVapp_testdata[[wf]]
-cali_imp <- td[["Cali"]]
-str(cali_imp[1:3])
+# import list of cali files
+cali_imp <- ETVapp::ETVapp_testdata[[wf]][['Cali']]
+head(cali_imp[[1]])
 ```
 
 ### Data processing
@@ -43,7 +43,7 @@ str(cali_imp[1:3])
 time_col <- "Time"
 int_col <- "157"
 cali_pro <- process_data(data = cali_imp, c1 = int_col, fl = 9, wf = wf)
-str(cali_pro[1:3])
+head(cali_pro[[1]])
 ```
 
 ### Peak evaluation
@@ -67,7 +67,7 @@ cali_peaks <- get_peakdata(
 )
 
 cali_peaks <- tab_cali(peak_data = cali_peaks, wf = wf, std_info = seq(0,50,10))
-gt::gt(cali_peaks)
+print(cali_peaks)
 ```
 
 Generate baseline data.
@@ -101,34 +101,35 @@ Peak areas are plotted against the analyte mass. Calibration parameter obtained 
 
 ```{r calibration_model, fig.width=3, fig.height=3}
 cm <- calc_cali_mod(df = cali_peaks[,c(6,4)], wf = wf)
+print(cm)
 par(mfrow=c(1,1))
 plot(cali_peaks[,c(6,4)])
 abline(a = cm[1,3], b = cm[1,1])
-gt::gt(cm)
 ```
 
 ## Sample analysis
 
 File import, data processing and peak evaluation of the sample measurement is accomplished similar to the calibration measurements.
 
-```{r load_sample, message=FALSE}
-smpl_pro <- process_data(data = td[['Sample']][[1]], c1 = int_col, fl = 9, wf = wf)
+```{r load_sample}
+smpl_imp <- ETVapp::ETVapp_testdata[[wf]][['Sample']]
+smpl_pro <- process_data(data = smpl_imp[[1]], c1 = int_col, fl = 9, wf = wf)
 smpl_peak <- get_peakdata(smpl_pro, PPmethod = "Peak (manual)", BLmethod = "none", int_col = int_col, time_col = time_col, peak_start = 230, peak_end = 320)
-gt::gt(smpl_peak)
+print(smpl_peak)
 ```
 
 The following code plots the sample time scan with the peak boundaries.
 
 ```{r sample_peak_detection_plot, fig.width=3*3, fig.height=3*2, out.width='100%', fig.align='center'}
 par(mfrow=c(1,1))
-  plot(smpl_pro, type="l", ylab = "Intensity [cps]", xlab = "Time [s]", main = "Sample")
+  plot(smpl_pro, type = "l", ylab = "Intensity [cps]", xlab = "Time [s]", main = "Sample")
   abline(v=smpl_peak[1,2:3], col=grey(0.8))
 ```
 
 Compute sample result based on the calibration model with the following code. The input of a mass fraction allows for result calculation if the elemental composition of the analyte is not fully captured by the acquired element, *e.g.* Sn in organo tin compounds or C in micro plastics.
 
 ```{r tab_sample_result}
-gt::gt(tab_result(
+t(tab_result(
   smpl_peak, 
   a = cm[1,3], 
   b = cm[1,1], 
@@ -143,14 +144,17 @@ gt::gt(tab_result(
 Blank measurements are imported, processed and plotted as follows. Data treatment analog to the sample data is recommended.
 
 ```{r load_blanks, fig.width=3*5, fig.height=3*2, out.width='100%', fig.align='center'}
-blnk_pro <- process_data(data = td[['Blanks']], c1 = int_col, fl = 9, wf = wf)
+blnk_imp <- ETVapp::ETVapp_testdata[[wf]][['Blanks']]
+blnk_pro <- lapply(1:length(blnk_imp), function(i){
+  process_data(data = blnk_imp[[i]], c1 = int_col, fl = 9, wf = wf)
+})
 
 par(mfrow=c(2,5))
 par(mar=c(5,3,0,0)+0.1)
 for (i in 1:min(length(blnk_pro), 10)) {
   ylim <- c(0, max(sapply(blnk_pro, function(x) {max(x[,2])})))
-  plot(blnk_pro[[i]], type="l", main = names(blnk_pro)[i], ylab="", ylim=ylim)
-  abline(v=smpl_peak[1,2:3], col=grey(0.8))
+  plot(blnk_pro[[i]], type = "l", main = names(blnk_pro)[i], ylab = "", ylim = ylim)
+  abline(v = smpl_peak[1,2:3], col = grey(0.8))
 }
 ```
 
@@ -165,16 +169,16 @@ blnk_peaks <- get_peakdata(
   peak_start = smpl_peak[,2], 
   peak_end = smpl_peak[,3]
 )
-gt::gt(blnk_peaks)
+head(blnk_peaks)
 ```
 
 The LOD and LOQ are estimated as three and ten times the standard deviation of the blank values divided by the slope of the linear calibration curve. At least three input values are required for statistical evaluation. Less than the recommended 10 entries will still give a result. The input of a theoretical 
 sample mass will compute the LOD and LOQ per sample mass.
 
 ```{r get_LOX}
-gt::gt(tab_LOX(x = blnk_peaks[,4], 
-               cali_slope = cm[1,1], 
-               wf = wf, 
-               mass_fraction2 = 1, 
-               sample_mass = 1))
+t(tab_LOX(x = blnk_peaks[,4], 
+          cali_slope = cm[1,1], 
+          wf = wf, 
+          mass_fraction2 = 1, 
+          sample_mass = 1))
 ```
