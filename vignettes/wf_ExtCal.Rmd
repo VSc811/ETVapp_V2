@@ -52,12 +52,12 @@ head(cali_pro[[1]])
 
 Prior to peak integration, the peak boundaries need to be defined either manually or *via* a simple algorithm based on a given minimum peak height. Modified polynomial fitting is implemented for estimating the baseline. Therefore, an excerpt of the pre-processed data is evaluated to avoid impact of signal fluctuations. The time window can be adjusted through the correction factor *cf* which determines the number of data points used around the detected peak. By default, a linear fitting will be computed. 
 
-However, the parameter *deg* allows the use of specified degrees of polynomial fitting. In our example, 
-we opted for a manual peak definition due to additional signals present in the time scan. Peak data is collected in a *data.frame* and information on the analyte mass are transferred through the function `tab_cali()`. 
+However, the parameter *deg* allows the use of specified degrees of polynomial fitting. In our example, we opted for a manual peak definition due to additional signals present in the time scan. Peak data is collected in a *data.frame* and information on the analyte mass are transferred through the function `tab_cali()`. The unit of measured standards can be provided through the parameter `ExtCal_unit`.
 
 ```{r get_cali_peaks}
 ps <- rep(145, length(cali_pro))
 pe <- seq(180, 230, length.out=length(cali_pro))
+ExtCal_unit <- c("\u00b5g")
 cf <- 50
 
 cali_peaks <- get_peakdata(
@@ -68,7 +68,7 @@ cali_peaks <- get_peakdata(
   peak_end = pe
 )
 
-cali_peaks <- tab_cali(peak_data = cali_peaks, wf = wf, std_info = seq(0,50,10))
+cali_peaks <- tab_cali(peak_data = cali_peaks, wf = wf, ExtCal_unit = ExtCal_unit, std_info = seq(0,50,10))
 print(cali_peaks)
 ```
 
@@ -93,7 +93,7 @@ The following code will plot the processed time scans of the selected calibratio
 par(mfrow=c(2,3))
 for (i in 1:6) {
   plot(cali_pro[[i]], type="l", 
-       ylab = "Intensity [cps]", xlab = "Time [s]", main = paste(cali_peaks[i,6], "ng"))
+       ylab = "Intensity [cps]", xlab = "Time [s]", main = paste(cali_peaks[i,6], ExtCal_unit))
   lines(x = cali_BL[[i]][,c(time_col)], y = cali_BL[[i]][,3], col = "blue")
   abline(v=cali_peaks[i,2:3], col=grey(0.8))
 }
@@ -128,7 +128,7 @@ par(mfrow=c(1,1))
   abline(v=smpl_peak[1,2:3], col=grey(0.8))
 ```
 
-Compute sample result based on the calibration model with the following code. The input of a mass fraction allows for result calculation if the elemental composition of the analyte is not fully captured by the acquired element, *e.g.* Sn in organo tin compounds or C in micro plastics.
+Compute sample result based on the calibration model with the following code. The input of the calibration standard unit through the parameter `ExtCal_unit` ensures the correct content unit for a sample mass in mg. For the results < 0.001, the unit automatically switches to the next lower unit. The parameter `mass_fraction2` allows for result calculation if the elemental composition of the analyte is not fully captured by the acquired element, *e.g.* Sn in organo tin compounds or C in micro plastics.
 
 ```{r tab_sample_result}
 t(tab_result(
@@ -136,6 +136,7 @@ t(tab_result(
   a = cm[1,3], 
   b = cm[1,1], 
   wf = wf,
+  ExtCal_unit = ExtCal_unit,
   mass_fraction2 = 1, 
   sample_mass = 1
 ))
@@ -174,13 +175,13 @@ blnk_peaks <- get_peakdata(
 head(blnk_peaks)
 ```
 
-The LOD and LOQ are estimated as three and ten times the standard deviation of the blank values divided by the slope of the linear calibration curve. At least three input values are required for statistical evaluation. Less than the recommended 10 entries will still give a result. The input of a theoretical 
-sample mass will compute the LOD and LOQ per sample mass.
+The LOD and LOQ are estimated as three and ten times the standard deviation of the blank values divided by the slope of the linear calibration curve. At least three input values are required for statistical evaluation. Less than the recommended 10 entries will still give a result. The input of a theoretical sample mass will compute the LOD and LOQ per sample mass in the unit provided by `ExtCal_unit`.
 
 ```{r get_LOX}
 t(tab_LOX(x = blnk_peaks[,4], 
           cali_slope = cm[1,1], 
           wf = wf, 
           mass_fraction2 = 1, 
-          sample_mass = 1))
+          sample_mass = 1,
+          ExtCal_unit = ExtCal_unit))
 ```
