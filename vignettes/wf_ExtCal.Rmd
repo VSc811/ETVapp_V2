@@ -144,7 +144,7 @@ t(tab_result(
 
 ## Limits of detection and quantification
 
-Blank measurements are imported, processed and plotted as follows. Data treatment analog to the sample data is recommended.
+Blank measurements are imported, processed and plotted as follows. The y-axis label is omitted intentionally. Data treatment analog to the sample data is recommended.
 
 ```{r load_blanks, fig.width=3*5, fig.height=3*2, out.width='100%', fig.align='center'}
 blnk_imp <- ETVapp::ETVapp_testdata[[wf]][['Blanks']]
