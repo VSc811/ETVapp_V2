@@ -1,6 +1,8 @@
 ---
 title: "External calibration (ExtCal) workflow"
-output: rmarkdown::html_vignette
+output: 
+  rmarkdown::html_vignette:
+  css: styles.css
 author: "Vera Scharek"
 vignette: >
   %\VignetteIndexEntry{External calibration (ExtCal) workflow}
@@ -20,7 +22,7 @@ knitr::opts_chunk$set(
 External calibration with dried liquid standards, matrix-matched standards or reference materials is a common approach for calibrating transient signal from ETV/ICP-MS and -OES measurements. Most ETV time scans do not exceed two peaks per analyte. However, matrix influences on the acquired isotope or emission line might lead to signal splitting or an uneven background signal, where peak detection algorithms fail and manual peak identification is necessary. On the other hand, co-vaporization of analyte and matrix components alternates the plasma and thus the signal response. The use of an internal standard allows to 
 correct for non-linearity and enables accurate analysis.      
 
-As an example, we provide the data of fluorine measurements included in the paper ["A direct solid sampling approach for fluorine determination *via* ETV/ICP-QQQ-MS."](https://pubs.rsc.org/ja/article/41/6/2005/1241105/A-direct-solid-sampling-approach-for-fluorine).
+As an example, we provide the data of fluorine measurements. The ETV/ICP-QQQ-MS method is described in the paper ["A direct solid sampling approach for fluorine determination *via* ETV/ICP-QQQ-MS"](https://pubs.rsc.org/ja/article/41/6/2005/1241105/A-direct-solid-sampling-approach-for-fluorine).
 
 ## Calibration data
 ### Import
