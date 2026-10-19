@@ -1,8 +1,9 @@
 ---
 title: "External gas calibration (ExtGasCal) workflow"
 output: rmarkdown::html_vignette
+author: "Vera Scharek"
 vignette: >
-  %\VignetteIndexEntry{workflow_ExtGasCal}
+  %\VignetteIndexEntry{External gas calibration (ExtGasCal) workflow}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -16,18 +17,13 @@ knitr::opts_chunk$set(
 
 ## Introduction
 
-External gas calibration is a new approach used in combination with ICP techniques 
-and has been applied for the determination of microplastics with single particle 
-ICP-MS and ETV/ICP-MS [paper citation]. The working principle is based on the 
-introduction of a dynamically diluted calibration gas into the ICP-MS system. 
-Consequently, data processing requires calculation of a mean value from the 
-continuous signal curves.
+External gas calibration is a new approach used in combination with ICP techniques and has been applied for the determination of microplastics with [single particle ICP-MS](https://link.springer.com/article/10.1007/s00216-025-05934-9) and [ETV/ICP-MS](https://link.springer.com/article/10.1007/s00216-025-06146-x). The working principle is based on the introduction of a dynamically diluted calibration gas into the ICP-MS system. Consequently, data processing requires calculation of a mean value from the continuous signal curves.
 
 The workflow external gas calibration (ExtGasCal) is compatible with ICP-MS or 
 -OES data.
 
-In the package *ETVapp*, we provide the example data of microplastic measurements 
-included in [paper](https-Link). They can be accessed by `ETVapp::ETVapp_testdata`.
+In the package *ETVapp*, we provide example data of microplastic measurements 
+accessable through `ETVapp::ETVapp_testdata`.
 
 ## Calibration data
 
