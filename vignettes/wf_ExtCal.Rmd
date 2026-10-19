@@ -52,7 +52,7 @@ head(cali_pro[[1]])
 
 Prior to peak integration, the peak boundaries need to be defined either manually or *via* a simple algorithm based on a given minimum peak height. Modified polynomial fitting is implemented for estimating the baseline. Therefore, an excerpt of the pre-processed data is evaluated to avoid impact of signal fluctuations. The time window can be adjusted through the correction factor *cf* which determines the number of data points used around the detected peak. By default, a linear fitting will be computed. 
 
-However, the parameter *deg* allows the use of specified degrees of polynomial fitting. In our example, we opted for a manual peak definition due to additional signals present in the time scan. Peak data is collected in a *data.frame* and information on the analyte mass are transferred through the function `tab_cali()`. The unit of measured standards can be provided through the parameter `ExtCal_unit`.
+However, the parameter *deg* allows the use of specified degrees of polynomial fitting. In our example, we opted for a manual peak definition due to additional signals present in the time scan. Peak data is collected in a *data.frame* and information on the analyte mass are transferred through the function `tab_cali()`. The unit of measured standards can be provided through the parameter *ExtCal_unit*.
 
 ```{r get_cali_peaks}
 ps <- rep(145, length(cali_pro))
@@ -128,7 +128,7 @@ par(mfrow=c(1,1))
   abline(v=smpl_peak[1,2:3], col=grey(0.8))
 ```
 
-Compute sample result based on the calibration model with the following code. The input of the calibration standard unit through the parameter `ExtCal_unit` ensures the correct content unit for a sample mass in mg. For the results < 0.001, the unit automatically switches to the next lower unit. The parameter `mass_fraction2` allows for result calculation if the elemental composition of the analyte is not fully captured by the acquired element, *e.g.* Sn in organo tin compounds or C in micro plastics.
+Compute sample result based on the calibration model with the following code. The input of the calibration standard unit through the parameter *ExtCal_unit* ensures the correct content unit for a sample mass in mg. For the results < 0.001, the unit automatically switches to the next lower unit. The parameter `mass_fraction2` allows for result calculation if the elemental composition of the analyte is not fully captured by the acquired element, *e.g.* Sn in organo tin compounds or C in micro plastics.
 
 ```{r tab_sample_result}
 t(tab_result(
