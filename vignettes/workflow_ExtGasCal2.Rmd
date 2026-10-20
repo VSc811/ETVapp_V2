@@ -102,29 +102,29 @@ abline(a = cm[1,3], b = cm[1,1])
 Repeat the procedure for the sample data.
 
 ```{r load_sample}
-smpl_imp <- ETVapp::ETVapp_testdata[['ExtGasCal']][['Samples']]
+smpl_imp <- ETVapp::ETVapp_testdata[[wf]][['Samples']]
 
-smpl_pro <- lapply(smpl_imp, function(x) {
-  process_data(data = x, c1 = anlt, fl = 9, wf = "ExtGasCal")
-})
+smpl_pro <- process_data(data = smpl_imp, c1 = anlt, fl = 9, wf = wf)
+
 head(smpl_pro[[1]])
 
-ps<- 90
+ps <- 90
 pe <- 118
 cf <- 50
 
-smpl_peaks <- ldply_base(1:length(smpl_pro), function(i) {
-  get_peakdata(
-    smpl_pro[[i]], 
-    int_col = anlt, 
-    PPmethod = "Peak (manual)",
-    minpeakheight = 1000000,
-    peak_start = ps, 
-    peak_end = pe
+smpl_peaks <- get_peakdata(
+  smpl_pro, 
+  int_col = anlt, 
+  PPmethod = "Peak (manual)",
+  minpeakheight = 1000000,
+  peak_start = ps, 
+  peak_end = pe
   )
-})
+
 print(smpl_peaks)
 ```
+
+Generate baseline data from a time scan excerpt and plot the sample time scan with integration parameter.
 
 ```{r get_sample_BL}
 smpl_BL <- lapply(1:length(smpl_pro), function(i) {
@@ -141,7 +141,7 @@ smpl_BL <- lapply(1:length(smpl_pro), function(i) {
 ```{r sample_peak_detection_plot, fig.width=3*3, fig.height=2*2, out.width='100%', fig.align='center'}
 par(mfrow=c(1,2))
 for (i in 1:2) {
-  plot(smpl_pro[[i]], type="l", ylab = "Intensity [cps]", xlab = "Time [s]")
+  plot(smpl_pro[[i]], type = "l", ylab = "Intensity [cps]", xlab = "Time [s]")
   lines(x = smpl_BL[[i]][,c("Time")], y = smpl_BL[[i]][,3], col = "blue")
   abline(v=smpl_peaks[i,2:3], col=grey(0.8))
 }
@@ -149,8 +149,8 @@ par(mfrow=c(1,1))
 ```
 
 Compute the sample result based on calibration model with the following code. 
-The input of a mass fraction allows for result calculation of the micro plastic 
-content (content as analyte) from the carbon mass (content as element). 
+The input of a mass fraction allows for result calculation of the microplastic 
+content (content as analyte) from the carbon mass (content as element). The units are automatically asigned to the output *data.frame* through the parameter *ExtGasCal_unit*.
 
 ```{r tab_sample_result}
 w_PE <- 0.856
@@ -160,7 +160,8 @@ t(tab_result(
   smpl_peaks, 
   a = cm[1,3], 
   b = cm[1,1], 
-  wf = "ExtGasCal",
+  wf = wf,
+  ExtGasCal_unit = ExtGasCal_unit,
   mass_fraction2 = w_PE, 
   sample_mass = sample_mass
 ))
