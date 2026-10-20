@@ -49,7 +49,7 @@ head(cali_pro[[1]])
 
 ### Signal evaluation
 
-Receive mean signal intensities *via* the peak picking method "mean_signal". The signal integration range is defined by *peak_start* and *peak_end*. Gas flows are asigned to the signal data with `tab_cali()`. Through the parameter *ExtGasCal_unit* specifying the unit of the gas flow is enabled. The parameter *fac* requires the input of a conversion factor for gas density, and optional mass percentage and molar fractions, to compute the mass flow rate. The units of the gas flows are automatically asigned to the output *data.frame*. 
+Receive mean signal intensities *via* the peak picking method "mean signal". The signal integration range is defined by *peak_start* and *peak_end*. Gas flows are asigned to the signal data with `tab_cali()`. Through the parameter *ExtGasCal_unit* specifying the unit of the gas flow is enabled. The parameter *fac* requires the input of a conversion factor for gas density, and optional mass percentage and molar fractions, to compute the mass flow rate. The units of the gas flows are automatically asigned to the output *data.frame*. 
 
 ```{r get_cali_peaks}
 cali_sig <- get_peakdata(
@@ -83,7 +83,6 @@ for (i in 1:9) {
   plot(cali_pro[[i]], type="l", ylab = "Intensity [cps]", xlab = "Time [s]", main = paste(cali_peaks[i,5], ExtGasCal_unit))
   abline(v=cali_peaks[i,2:3], col=grey(0.8))
 }
-par(mfrow=c(1,1))
 ```
 
 Peak areas are plotted against the gas flows. Calibration parameter obtained 
@@ -145,7 +144,6 @@ for (i in 1:2) {
   lines(x = smpl_BL[[i]][,c("Time")], y = smpl_BL[[i]][,3], col = "blue")
   abline(v=smpl_peaks[i,2:3], col=grey(0.8))
 }
-par(mfrow=c(1,1))
 ```
 
 Compute the sample result based on calibration model with the following code. 
@@ -169,15 +167,12 @@ t(tab_result(
 
 ## Limits of detection and quantification
 
-Blank measurements are imported and processed as follows. For estimating the 
-limit of detection (LOD) and quantification (LOQ) according to the blank value 
-method, integrate the blank signals in the peak time window. 
+Blank measurements are imported and processed as follows. For estimating the LOD and LOQ according to the blank value method, integrate the blank signals in the peak time window. 
 
-```{r load_blanks, fig.width=3*5, fig.height=3*2, out.width='100%', fig.align='center'}
-blnk_imp <- ETVapp::ETVapp_testdata[['ExtGasCal']][['Blanks']]
-blnk_pro <- lapply(1:length(blnk_imp), function(i) {
-  process_data(data = blnk_imp[[i]], c1 = anlt, fl = 9, wf = "ExtGasCal")
-})
+```{r load_blanks, fig.width=3*3, fig.height=2*3, out.width='100%', fig.align='center'}
+blnk_imp <- ETVapp::ETVapp_testdata[[wf]][['Blanks']]
+blnk_pro <- process_data(data = blnk_imp, c1 = anlt, fl = 9, wf = wf)
+
 blnk_BL <- lapply(1:length(blnk_pro), function(i) {
   flt <- (min(which(blnk_pro[[i]][,time_col]>=ps))-cf):(max(which(blnk_pro[[i]][,time_col]<=pe))+cf)
   ETVapp:::blcorr_col(
@@ -204,20 +199,17 @@ print(blnk_peaks)
 par(mfrow=c(3,3))
 for (i in 1:min(length(blnk_pro), 10)) {
   ylim <- c(0, max(sapply(blnk_pro, function(x) {max(x[,2])})))
-  plot(blnk_pro[[i]], type="l", main = names(blnk_pro)[i], ylab="Intensity [cps]", xlab = "Time [s]",ylim=ylim)
+  plot(blnk_pro[[i]], type="l", main = names(blnk_pro)[i], ylab = "Intensity [cps]", xlab = "Time [s]", ylim = ylim)
   lines(x = blnk_BL[[i]][,c("Time")], y = blnk_BL[[i]][,3], col = "blue")
   abline(v=blnk_peaks[i,2:3], col=grey(0.8))
 }
-par(mfrow=c(1,1))
 ```
 
-The LOD and LOQ are estimated as three and ten times the standard deviation of 
-the blank values divided by the slope of the linear calibration curve. At least 
-three input values are required for statistical evaluation. Less than the 
-recommended 10 entries will still give a result. The input of a theoretical 
-sample mass will compute the LOD and LOQ per sample mass. Figures of merit are 
-provided related to carbon (measured element) and polyethylene (analyte).
+The LOD and LOQ are estimated as three and ten times the standard deviation of the blank values divided by the slope of the linear calibration curve. At least three input values are required for statistical evaluation. Less than the recommended 10 entries will still give a result. The input of a theoretical sample mass will compute the LOD and LOQ per sample mass. Figures of merit are provided related to carbon (measured element) and polyethylene (analyte). The unit of the LOD and LOQ is automatically asigned to the output *data.frame* through the parameter *ExtGasCal_unit*.
 
 ```{r get_LOX}
-t(tab_LOX(x = blnk_peaks[,4], cali_slope = cm[1,1], wf = "ExtGasCal", mass_fraction2 = w_PE))
+t(tab_LOX(x = blnk_peaks[,4], 
+          cali_slope = cm[1,1], 
+          wf = wf, 
+          mass_fraction2 = w_PE))
 ```
