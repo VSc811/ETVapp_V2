@@ -1,8 +1,11 @@
 ---
 title: "Isotope dilution mass spectrometry (IDMS) workflow"
-output: rmarkdown::html_vignette
+output: 
+  rmarkdown::html_vignette:
+  css: styles.css
+author: "Vera Scharek"
 vignette: >
-  %\VignetteIndexEntry{workflow_IDMS}
+  %\VignetteIndexEntry{Isotope dilution mass spectrometry (IDMS) workflow}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -16,25 +19,12 @@ knitr::opts_chunk$set(
 
 ## Introduction
 
-IDMS has first been introduced as a calibration strategy in combination with 
-ETV/ICP-MS by [Vanhaecke *et al.*](https://pubs.rsc.org/en/content/articlelanding/1997/ja/a604133g). Using IDMS corrects non-spectral 
-interferences, signal drifts caused by the ICP-MS, and fluctuations in the 
-vaporization and transport behaviour of the ETV by mixing the sample with a 
-known amount of a isotopic-enriched spike of the same element. The analyte 
-concentration can be determined through measuring the alternated isotopic 
-composition of the sample. In the following, the enriched spike isotope will 
-be referred as **isotope 1** or **spike isotope** while **isotope 2** or 
-**sample isotope** denotes the isotope used for calculating the isotope ratios. 
+IDMS has first been introduced as a calibration strategy in combination with ETV/ICP-MS by [Vanhaecke *et al.*](https://pubs.rsc.org/en/content/articlelanding/1997/ja/a604133g). Using IDMS corrects non-spectral interferences, signal drifts caused by the ICP-MS, and fluctuations in the vaporization and transport behaviour of the ETV by mixing the sample with a known amount of a isotopic-enriched spike of the same element. The analyte concentration can be determined through measuring the alternated isotopic composition of the sample. In the following, the enriched spike isotope will 
+be referred as **isotope 1** or **spike isotope** while **isotope 2** or **sample isotope** denotes the isotope used for calculating the isotope ratios. 
 
-It has to be noted that although it is possible to compute the calculations for 
-ICP-OES data only MS data will provide valid results.
+It has to be noted that although it is possible to compute the calculations for ICP-OES data only MS data will provide valid results.
 
-Example measurements of Cd in a cacao reference material are provided the 
-*ETVapp* package and can be accessed through the library.
-
-```{r setup}
-library(ETVapp)
-```
+Example measurements of Cd in a cacao reference material are provided the *ETVapp* package and can be accessed through the library.
 
 ## Mass bias
 
@@ -45,6 +35,7 @@ without spike addition [JL: but below you extract the spike isotope?? VS: the sp
 this purpose which will be imported through the following code.
 
 ```{r load_MassBias_data}
+library(ETVapp)
 mb_imp <- ETVapp::ETVapp_testdata[['IDMS']][['Massbias']]
 head(mb_imp[[1]])
 ```
