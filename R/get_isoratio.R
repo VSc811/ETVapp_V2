@@ -46,21 +46,35 @@ get_isoratio <- function (
     })
 
     ##Checks
+    output <- logical(nrow(iso_peak) / 2)
+
+    j <- 1
+    for (i in seq(1, nrow(iso_peak), 2)) {
+      output[j] <-
+        abs(iso_peak[i, 2] - iso_peak[i + 1, 2]) > 5 |
+        abs(iso_peak[i, 3] - iso_peak[i + 1, 3]) > 5
+      j <- j + 1
+    }
+
     ensure_that(
-      !(diff(range(iso_peak[,2])) > 5 | diff(range(iso_peak[,3])) > 5),
-      "Divergating peak boundaries for the isotopes found. Please check the integration. Isotope ratio calculation may be affected.",
+      !any(output),
+      "Different peak boundaries for the isotopes found. Please check the integration. Complete peak integration is necessary for an accurate isotope ratio determination.",
       opt = "warn"
     )
 
     #Isotope table
     iso_table <- data.frame(
       "Spike isotope" = iso1_col,
+      #"Start [s]" = iso_peak[1,2],
+      #"End [s]" = iso_peak[1,3],
       "Sample isotope" = iso2_col,
+      #"Start [s]" = iso_peak[2,2],
+      #"End [s]" = iso_peak[2,3],
       "R_m" = iso_peak[1,4] / iso_peak[2,4],
       check.names = FALSE
     )
 
-    return(iso_table)
+    return(iso_peak)
   }
 
   # run function on elements of list or on a single data.frame
