@@ -98,7 +98,6 @@ for (i in 1:length(mb_pro)) {
   lines(x = mb_BL[[i]][,c("Time")], y = mb_BL[[i]][,c("111Cd_BL")], col = "blue")
   abline(v=c(mb_peaks[i + length(mb_pro),2],mb_peaks[i + length(mb_pro),3]), col=grey(0.8))
 }
-par(mfrow=c(1,1))
 ```
 
 Calling the function `get_isoratio()` will compute the isotope ratio of the spike to the sample isotope based on peak areas.
@@ -190,7 +189,6 @@ for (i in 1:length(samp_pro)) {
   lines(x = samp_BL[[i]][,c("Time")], y = samp_BL[[i]][,c("111Cd_BL")], col = "blue")
   abline(v=c(samp_peaks[i + length(samp_pro),2],samp_peaks[i + length(samp_pro),3]), col=grey(0.8))
 }
-par(mfrow=c(1,1))
 ```
 
 Calculate the isotope ratios.
@@ -208,11 +206,11 @@ samp_ratios <- get_isoratio(
 print(samp_peaks)
 ```
 
-The amount of added spike *N_sp* is determined through the function `calc_N_sp`. `calc_analyte_mass_as_element()` computes the analyte mass as element based on the measured isotope ratios, the mass discrimination factor *K*, and the known spike amount through the IDMS function. The function `tab_result()` will output the result table. Enter the unit of the *iso1* in the spike solution through the parameter *c_sp_unit* for a correct result unit. The input of a mass fraction allows for result calculation if the elemental composition of the analyte is not fully captured by the acquired element, *e.g.* Sn in organo tin compounds or C in micro plastics.
+The amount of added spike *N_sp* is determined through the function `calc_N_sp`. Through the IDMS function, `calc_analyte_mass_as_element()` computes the analyte mass as element based on the measured isotope ratios, the mass discrimination factor *K*, and the known spike amount *N_sp*. The function `tab_result()` will output the result table. Enter the unit of the *iso1* in the spike solution through the parameter *c_sp_unit* for a correct result unit. The input of a mass fraction allows for result calculation if the elemental composition of the analyte is not fully captured by the acquired element, *e.g.* Sn in organo tin compounds or C in micro plastics.
 
 ```{r get_Samples_result}
 N_sp <- calc_N_sp(c_sp = 2.5, V_sp = 6, VF1 = 1000, M_sp = 113.01, M_sa = 112.41)
-amae <- calc_analyte_mass_as_element(R_m = samp_peaks[,"R_m"], 
+amae <- calc_analyte_mass_as_element(R_m = samp_ratios[,"R_m"], 
                                      K = mean(K), 
                                      Asp_iso1 = 92.61, 
                                      Asp_iso2 = 0.22, 
@@ -221,7 +219,7 @@ amae <- calc_analyte_mass_as_element(R_m = samp_peaks[,"R_m"],
                                      N_sp = N_sp)
 
 t(tab_result(
-  peak_data = samp_peaks, 
+  peak_data = samp_ratios, 
   wf = wf, 
   c_sp_unit = "\u00b5g/L",
   K = mean(K), 
@@ -231,48 +229,37 @@ t(tab_result(
 
 ## Limits of detection and quantification
 
-The limit of detection (LOD) and quantification (LOQ) are estimated from blank 
-measurements containing spike. Perform import and isotope ratio calculations of 
-integrated the blank signals in the peak time window as follows. The blank 
-measurements provided in the *ETVapp* package are identical to the sample 
-measurements and are included for demonstration purposes. 
+The LOD and LOQ are estimated from blank measurements containing spikes solution. Perform import and isotope ratio calculations of the integrated blank signals in the peak time window as follows. The blank measurements provided in the *ETVapp* package are identical to the sample measurements and are included for demonstration purposes. 
 
 ```{r load_blanks}
-blk_imp <- ETVapp::ETVapp_testdata[['IDMS']][['Blanks']]
+blk_imp <- ETVapp::ETVapp_testdata[[wf]][['Blanks']]
 
-blk_peaks <- ldply_base(1:length(blk_imp), function(i) {
-  get_isoratio(
-    blk_imp[[i]], 
+blk_ratios <- get_isoratio(
+    blk_imp, 
     iso1_col = "113Cd", 
     iso2_col = "111Cd", 
     PPmethod = "Peak (manual)", 
     peak_start = 72, 
-    peak_end = 132
+    peak_end = 105
   )
-})
 
-DT::datatable(blk_peaks, options = list(dom = "t"))
+print(blk_ratios)
 ```
 
-Analog to sample measurements, a (theoretical) analyte mass is computed for each 
-blank measurement. 
+Analog to sample measurements, a (theoretical) analyte mass is computed for each blank measurement using the known spike amount *N_sp*. Generate the LOD and LOQ result table. An input *data.frame* with at least three entries in rows is required for calculation of the standard deviation. Ensure the correct unit of the spike solution through the parameter *c_sp_unit*. 
 
 ```{r LODLOQ}
-LOX_df <- tab_result(
-  peak_data = blk_peaks, 
-  wf = "IDMS", 
-  K = mean(K), 
-  amae = amae
+blk_amae <- calc_analyte_mass_as_element(R_m = blk_ratios[,"R_m"], 
+                                         K = mean(K), 
+                                         Asp_iso1 = 92.61, 
+                                         Asp_iso2 = 0.22, 
+                                         As_iso1 = 12.22, 
+                                         As_iso2 = 12.8, 
+                                         N_sp = N_sp)
+
+t(tab_LOX(
+  x = blk_amae, 
+  wf = wf,
+  c_sp_unit = "\u00b5g/L")
 )
-
-DT::datatable(LOX_df, options = list(dom = "t"))
-```
-Generate the LOD and LOQ result table. An input *data.frame* with at least three 
-entries in rows is required for calculation of the standard deviation. 
-
-```{r Result}
-DT::datatable(tab_LOX(
-  x = LOX_df[,"R_corr"], 
-  wf = "IDMS"
-), options = list(dom = "t"))
 ```
