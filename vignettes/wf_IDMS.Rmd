@@ -52,7 +52,7 @@ mb_peaks <- ldply_base(c(iso1, iso2), function(i) {
       get_peakdata(mb_pro, 
                    PPmethod = "Peak (height)", 
                    int_col = i, 
-                   minpeakheight = 4500,
+                   minpeakheight = 3300,
                    BLmethod = c("modpolyfit"), 
                    deg = 1, 
                    cf = cf)
@@ -65,7 +65,8 @@ To check the integration result, plot the time scans of the spike and sample iso
 
 ```{r mass_bias_peak_detection_plot, fig.width=3*3, fig.height=3*2, out.width='100%', fig.align='center'}
 mb_BL <- lapply(seq_along(mb_pro), function(i) {
-  flt <- (min(which(mb_pro[[i]][,time_col]>=mb_peaks[i,2]))-cf):(max(which(mb_pro[[i]][,time_col]<=mb_peaks[i,3]))+cf)
+  flt <- (min(which(mb_pro[[i]][,time_col]>=mb_peaks[i,2]))-cf):
+    (max(which(mb_pro[[i]][,time_col]<=mb_peaks[i,3]))+cf)
   ETVapp:::blcorr_col(
     df = mb_pro[[i]][flt,c(time_col, iso1, iso2)],
     nm = iso1, 
@@ -75,7 +76,8 @@ mb_BL <- lapply(seq_along(mb_pro), function(i) {
 })
 
 mb_BL <- lapply(1:length(mb_BL), function(i) {
-  flt <- (min(which(mb_pro[[i]][,time_col]>=mb_peaks[i + length(mb_pro),2]))-cf):(max(which(mb_pro[[i]][,time_col]<=mb_peaks[i + length(mb_pro),3]))+cf)
+  flt <- (min(which(mb_pro[[i]][,time_col]>=mb_peaks[i + length(mb_pro),2]))-cf):
+    (max(which(mb_pro[[i]][,time_col]<=mb_peaks[i + length(mb_pro),3]))+cf)
   ETVapp:::blcorr_col(
     df = mb_BL[[i]],
     nm = iso2, 
@@ -108,7 +110,7 @@ mb_ratios <- get_isoratio(
   iso1_col = iso1, 
   iso2_col = iso2, 
   PPmethod = "Peak (height)",
-  minpeakheight = 4500
+  minpeakheight = 3300
   )
 
 print(mb_ratios)
@@ -135,14 +137,14 @@ samp_imp <- ETVapp::ETVapp_testdata[[wf]][['Samples']]
 
 samp_pro <- process_data(data = samp_imp, wf = wf, c1 = iso1, c2 = iso2, fl = NULL)
 
-ps <- 72
-pe <- 105
+ps <- 74
+pe <- 132
 
 samp_peaks <- ldply_base(c(iso1, iso2), function(i) {
       get_peakdata(samp_pro, 
                    PPmethod = "Peak (manual)", 
                    int_col = i,
-                   peak_start = ps, 
+                   peak_start = ps,
                    peak_end = pe,
                    BLmethod = c("modpolyfit"), 
                    deg = 1, 
@@ -156,7 +158,8 @@ Plot the sample time scans with the peak parameter for each isotope to check cor
 
 ```{r sample_peak_detection_plot, fig.width=3*3, fig.height=3*2, out.width='100%', fig.align='center'}
 samp_BL <- lapply(seq_along(samp_pro), function(i) {
-  flt <- (min(which(samp_pro[[i]][,time_col]>=samp_peaks[i,2]))-cf):(max(which(samp_pro[[i]][,time_col]<=samp_peaks[i,3]))+cf)
+  flt <- (min(which(samp_pro[[i]][,time_col]>=samp_peaks[i,2]))-cf):
+    (max(which(samp_pro[[i]][,time_col]<=samp_peaks[i,3]))+cf)
   ETVapp:::blcorr_col(
     df = samp_pro[[i]][flt,c(time_col, iso1, iso2)],
     nm = iso1, 
@@ -166,7 +169,8 @@ samp_BL <- lapply(seq_along(samp_pro), function(i) {
 })
 
 samp_BL <- lapply(1:length(samp_BL), function(i) {
-  flt <- (min(which(samp_pro[[i]][,time_col]>=samp_peaks[i + length(samp_pro),2]))-cf):(max(which(samp_pro[[i]][,time_col]<=samp_peaks[i + length(samp_pro),3]))+cf)
+  flt <- (min(which(samp_pro[[i]][,time_col]>=samp_peaks[i + length(samp_pro),2]))-cf):
+    (max(which(samp_pro[[i]][,time_col]<=samp_peaks[i + length(samp_pro),3]))+cf)
   ETVapp:::blcorr_col(
     df = samp_BL[[i]],
     nm = iso2, 
@@ -206,7 +210,7 @@ samp_ratios <- get_isoratio(
 print(samp_peaks)
 ```
 
-The amount of added spike *N_sp* is determined through the function `calc_N_sp`. Through the IDMS function, `calc_analyte_mass_as_element()` computes the analyte mass as element based on the measured isotope ratios, the mass discrimination factor *K*, and the known spike amount *N_sp*. The function `tab_result()` will output the result table. Enter the unit of the *iso1* in the spike solution through the parameter *c_sp_unit* for a correct result unit. The input of a mass fraction allows for result calculation if the elemental composition of the analyte is not fully captured by the acquired element, *e.g.* Sn in organo tin compounds or C in micro plastics.
+The amount of added spike *N_sp* is determined through the function `calc_N_sp`. Through the IDMS function, `calc_analyte_mass_as_element()` computes the analyte mass as element based on the measured isotope ratios, the mass discrimination factor *K*, and the known spike amount *N_sp*. The function `tab_result()` will output the result table. Enter the unit of the *iso1* in the spike stock solution through the parameter *c_sp_unit* for a correct result unit. The input of a mass fraction allows for result calculation if the elemental composition of the analyte is not fully captured by the acquired element, *e.g.* Sn in organo tin compounds or C in micro plastics.
 
 ```{r get_Samples_result}
 N_sp <- calc_N_sp(c_sp = 2.5, V_sp = 6, VF1 = 1000, M_sp = 113.01, M_sa = 112.41)
@@ -221,7 +225,7 @@ amae <- calc_analyte_mass_as_element(R_m = samp_ratios[,"R_m"],
 t(tab_result(
   peak_data = samp_ratios, 
   wf = wf, 
-  c_sp_unit = "\u00b5g/L",
+  c_sp_unit = "mg/L",
   K = mean(K), 
   amae = amae)
 )
@@ -239,14 +243,14 @@ blk_ratios <- get_isoratio(
     iso1_col = "113Cd", 
     iso2_col = "111Cd", 
     PPmethod = "Peak (manual)", 
-    peak_start = 72, 
-    peak_end = 105
+    peak_start = 74, 
+    peak_end = 132
   )
 
 print(blk_ratios)
 ```
 
-Analog to sample measurements, a (theoretical) analyte mass is computed for each blank measurement using the known spike amount *N_sp*. Generate the LOD and LOQ result table. An input *data.frame* with at least three entries in rows is required for calculation of the standard deviation. Ensure the correct unit of the spike solution through the parameter *c_sp_unit*. 
+Analog to sample measurements, a (theoretical) analyte mass is computed for each blank measurement using the known spike amount *N_sp*. Generate the LOD and LOQ result table. An input *data.frame* with at least three entries in rows is required for calculation of the standard deviation. Ensure the correct unit of the spike stock solution through the parameter *c_sp_unit*. 
 
 ```{r LODLOQ}
 blk_amae <- calc_analyte_mass_as_element(R_m = blk_ratios[,"R_m"], 
@@ -260,6 +264,6 @@ blk_amae <- calc_analyte_mass_as_element(R_m = blk_ratios[,"R_m"],
 t(tab_LOX(
   x = blk_amae, 
   wf = wf,
-  c_sp_unit = "\u00b5g/L")
+  c_sp_unit = "mg/L")
 )
 ```
