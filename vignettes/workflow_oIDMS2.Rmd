@@ -1,9 +1,10 @@
 ---
 title: "On-line isotope dilution mass spectrometry (oIDMS) workflow"
 output: 
-  rmarkdown::html_vignette
+  rmarkdown::html_vignette:
+  css: style.css
 vignette: >
-  %\VignetteIndexEntry{workflow_oIDMS}
+  %\VignetteIndexEntry{On-line isotope dilution mass spectrometry (oIDMS) workflow}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -17,30 +18,15 @@ knitr::opts_chunk$set(
 
 ## Introduction
 
-On-line IDMS is a variation of IDMS. The isotope-enriched spike is not mixed 
-with sample prior to a separation technique but continuously added before the 
-mass spectrometer. This provides the advantage of using a species &shy; unspecific 
-spike since the spike does not undergo the same treatment as the sample. For 
-ETV measurements, on-line IDMS enables utilizing a spike with a different 
-vaporization behavior to the analyte and automatizes the spike introduction.
+On-line IDMS is a variation of IDMS. The isotope-enriched spike is not mixed with sample prior to a separation technique but continuously added before the mass spectrometer. This provides the advantage of using a species unspecific spike since the spike does not undergo the same treatment as the sample. For ETV measurements, on-line IDMS enables utilizing a spike with a different vaporization behavior to the analyte and automatizes the spike introduction.
 
-This workflow describes the data treatment for on-line IDMS based on a 
-[published on-line ETV/ICP-IDMS approach](https://link.springer.com/article/10.1007/s00216-025-06064-y). The spike aerosol was generated through a low-flow 
-nebulizer and merged with the ETV sample aerosol in a modified cyclonic spray 
-chamber prior to ionization in the plasma. In the following, the enriched spike 
-isotope will be referred as **isotope 1** or **spike isotope** while 
+This workflow describes the data treatment for on-line IDMS based on a [published on-line ETV/ICP-IDMS approach](https://link.springer.com/article/10.1007/s00216-025-06064-y). The spike aerosol was generated through a low-flow nebulizer and merged with the ETV sample aerosol in a modified cyclonic spray chamber prior to ionization in the plasma. In the following, the enriched spike isotope will be referred as **isotope 1** or **spike isotope** while 
 **isotope 2** or **sample isotope** denotes the isotope used for calculating the 
 isotope ratios.
 
-It has to be noted that although it is possible to compute the calculations for 
-ICP-OES data only MS data will provide valid results.
+It has to be noted that although it is possible to compute the calculations for ICP-OES data only MS data will provide valid results.
 
-Example measurements of tin in a sediment reference material are provided 
-the *ETVapp* package and can be accessed through the library.
-
-```{r setup}
-library(ETVapp)
-```
+Example measurements of tin in a sediment reference material are provided the *ETVapp* package and can be accessed through the library.
 
 ## Mass bias
 
@@ -52,6 +38,7 @@ reference material. The following code will import the raw data files, calculate
 the isotope ratios based on the peak areas and return *K* for each input data.
 
 ```{r MassBias}
+library(ETVapp)
 mb_imp <- ETVapp::ETVapp_testdata[["oIDMS"]][["Massbias"]]
 
 head(mb_imp[[1]])
