@@ -20,9 +20,7 @@ knitr::opts_chunk$set(
 
 On-line IDMS is a variation of IDMS. The isotope-enriched spike is not mixed with sample prior to a separation technique but continuously added before the mass spectrometer. This provides the advantage of using a species unspecific spike since the spike does not undergo the same treatment as the sample. For ETV measurements, on-line IDMS enables utilizing a spike with a different vaporization behavior to the analyte and automatizes the spike introduction.
 
-This workflow describes the data treatment for on-line IDMS based on a [published on-line ETV/ICP-IDMS approach](https://link.springer.com/article/10.1007/s00216-025-06064-y). The spike aerosol was generated through a low-flow nebulizer and merged with the ETV sample aerosol in a modified cyclonic spray chamber prior to ionization in the plasma. In the following, the enriched spike isotope will be referred as **isotope 1** or **spike isotope** while 
-**isotope 2** or **sample isotope** denotes the isotope used for calculating the 
-isotope ratios.
+This workflow describes the data treatment for on-line IDMS based on a [published on-line ETV/ICP-IDMS approach](https://link.springer.com/article/10.1007/s00216-025-06064-y). The spike aerosol was generated through a low-flow nebulizer and merged with the ETV sample aerosol in a modified cyclonic spray chamber prior to ionization in the plasma. In the following, the enriched spike isotope will be referred as **isotope 1** or **spike isotope** while **isotope 2** or **sample isotope** denotes the isotope used for calculating the isotope ratios.
 
 It has to be noted that although it is possible to compute the calculations for ICP-OES data only MS data will provide valid results.
 
@@ -30,62 +28,56 @@ Example measurements of tin in a sediment reference material are provided the *E
 
 ## Mass bias
 
-The transmission of ions is influenced in regard to their mass during ionization, 
-passing the ion optics, mass separation and detection. To correct the mass bias, 
-a correction factor *K* is determined by the analysis of a sample (or standard) 
-without spike addition. The package provides a triplicate measurement of the 
-reference material. The following code will import the raw data files, calculate 
-the isotope ratios based on the peak areas and return *K* for each input data.
+The transmission of ions is influenced in regard to their mass during ionization, passing the ion optics, mass separation and detection. To correct the mass bias, a correction factor *K* is determined by the analysis of a sample (or standard) without spike addition. For this purpose, the package provides a triplicate measurement of the reference material. The following code will import the raw data files.
+
+```{r load_MassBias_data}
+library(ETVapp)
+wf <- "oIDMS"
+
+mb_imp <- ETVapp::ETVapp_testdata[[wf]][['Massbias']]
+head(mb_imp[[1]])
+```
+The following code will import the raw data files, calculate the isotope ratios *R_m* based on the peak areas and return *K* for each input data. Read the vignette "wf_IDMS" for a more detailed description of the workflow.
 
 ```{r MassBias}
 library(ETVapp)
-mb_imp <- ETVapp::ETVapp_testdata[["oIDMS"]][["Massbias"]]
-
-head(mb_imp[[1]])
-
 iso1 <- "117Sn"
 iso2 <- "122Sn"
-abnd1 <- 7.68
-abnd2 <- 4.63
+ps <- 70
+pe <- 105
 
-mb_peaks <- ldply_base(1:length(mb_imp), function(i) {
-  get_isoratio(
-    data = mb_imp[[i]], 
+mb_ratios <- get_isoratio(
+    data = mb_imp, 
     iso1_col = iso1, 
     iso2_col = iso2,
     PPmethod = "Peak (manual)", 
-    peak_start = 70, 
-    peak_end = 105
+    peak_start = ps, 
+    peak_end = pe
   )
-})
 
 head(mb_peaks)
 
 K <- calc_massbias(
-  mb_peaks[,"R_m"], 
-  As_iso1 = abnd1, 
-  As_iso2 = abnd2
+  mb_ratios[,"R_m"], 
+  As_iso1 = 7.68, 
+  As_iso2 = 4.63
 )
 
 print(K)
 
 ```
 
-View time scans of the spike and sample isotope with peak integration parameter 
-by computing the following code.
+View time scans of the spike and sample isotope with peak integration parameter by computing the following code.
 
 ```{r mass_bias_peak_detection_plot, fig.width=3*3, fig.height=3*2, out.width='100%', fig.align='center'}
-ps <- 70
-pe <- 105
 time_col <- "Time"
 cf <- 50
 
-mb_pro <- lapply(mb_imp, function(x) {
-  process_data(data = x, wf = "IDMS", c1 = iso1, c2 = iso2, fl = NULL)
-})
+mb_pro <- process_data(data = mb_imp, wf = wf, c1 = iso1, c2 = iso2, fl = NULL)
 
 mb_BL <- lapply(1:length(mb_pro), function(i) {
-  flt <- (min(which(mb_pro[[i]][,time_col]>=ps))-cf):(max(which(mb_pro[[i]][,time_col]<=pe))+cf)
+  flt <- (min(which(mb_pro[[i]][,time_col]>=ps))-cf):
+    (max(which(mb_pro[[i]][,time_col]<=pe))+cf)
   ETVapp:::blcorr_col(
     df = mb_pro[[i]][flt,c(time_col, iso1, iso2)],
     nm = iso1, 
@@ -106,14 +98,14 @@ mb_BL <- lapply(1:length(mb_BL), function(i) {
 mb_no <- seq(1,3,1)
 par(mfrow=c(2,3))
 for (i in 1:3) {
-  plot(mb_pro[[i]][,c("Time")], mb_pro[[i]][,"117Sn"], type="l", 
+  plot(mb_pro[[i]][,c("Time")], mb_pro[[i]][,iso1], type="l", 
        ylab = "Intensity [cps]", xlab = "Time [s]", main = paste("117Sn", mb_no[i]))
   #lines(mb_pro[[i]][,c("Time")], mb_pro[[i]][,c("111Cd")], col=3)
   lines(x = mb_BL[[i]][,c("Time")], y = mb_BL[[i]][,"117Sn_BL"], col = "blue")
   abline(v=c(ps,pe), col=grey(0.8))
 }
 for (i in 1:3) {
-  plot(mb_pro[[i]][,c("Time")], mb_pro[[i]][,c("122Sn")], type="l", 
+  plot(mb_pro[[i]][,c("Time")], mb_pro[[i]][,iso2], type="l", 
        ylab = "Intensity [cps]", xlab = "Time [s]", main = paste("122Sn", mb_no[i]))
   #lines(mb_pro[[i]][,c("Time")], mb_pro[[i]][,c("111Cd")], col=3)
   lines(x = mb_BL[[i]][,c("Time")], y = mb_BL[[i]][,"122Sn_BL"], col = "blue")
