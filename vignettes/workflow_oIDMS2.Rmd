@@ -29,19 +29,16 @@ Example measurements of tin in a sediment reference material are provided the *E
 
 ## Mass bias
 
-The transmission of ions is influenced in regard to their mass during ionization, passing the ion optics, mass separation and detection. To correct the mass bias, a correction factor *K* is determined by the analysis of a sample (or standard) without spike addition. For this purpose, the package provides a triplicate measurement of the reference material. The following code will import the raw data files.
+The transmission of ions is influenced in regard to their mass during ionization, passing the ion optics, mass separation and detection. To correct the mass bias, a correction factor *K* is determined by the analysis of a sample (or standard) without spike addition. For this purpose, the package provides a triplicate measurement of the reference material. The following code will import the raw data files, calculate the isotope ratios *R_m* based on the peak areas and return *K* for each input data. Read the vignette "wf_IDMS" for a more detailed description of the workflow.
 
-```{r load_MassBias_data}
+```{r MassBias}
 library(ETVapp)
 wf <- "oIDMS"
 
 mb_imp <- ETVapp::ETVapp_testdata[[wf]][['Massbias']]
-head(mb_imp[[1]])
-```
-The following code will import the raw data files, calculate the isotope ratios *R_m* based on the peak areas and return *K* for each input data. Read the vignette "wf_IDMS" for a more detailed description of the workflow.
 
-```{r MassBias}
-library(ETVapp)
+head(mb_imp[[1]])
+
 iso1 <- "117Sn"
 iso2 <- "122Sn"
 abnd1 <- 7.68
@@ -67,7 +64,6 @@ K <- calc_massbias(
 )
 
 print(K)
-
 ```
 
 View time scans of the spike and sample isotope with peak integration parameter by computing the following code.
@@ -112,20 +108,18 @@ for (i in 1:3) {
   lines(x = mb_BL[[i]][,c("Time")], y = mb_BL[[i]][,"122Sn_BL"], col = "blue")
   abline(v=c(ps,pe), col=grey(0.8))
 }
-par(mfrow=c(1,1))
 ```
 
 ## Transport efficiency
 
-Inserting the spike aerosol after sample vaporization may lead to a loss in regard to the sample aerosol. We included the calculation of a transport efficiency *n_trans* through the particle size method using a nano particle standard to correct for this effect. Equations and data processing steps included in the package are based on the Excel sheet RIKILT single particle 
-calculation tool (version 2) published in [this article](https://pubs.rsc.org/en/content/articlelanding/2015/ja/c4ja00357h). For a detailed tutorial of on single particle measurements, view the [standard operating procedure](https://www.google.com/url?client=internal-element-cse&cx=a5297c89c4bbec8e2&q=https://www.wur.nl/nl/show/spicpms-procedure-version-2.htm&sa=U&ved=2ahUKEwjJh7y-2uuPAxV3SfEDHcl4KTAQFnoECAEQAQ&usg=AOvVaw1dElg273-ODufTr_qkAMiq).
+Inserting the spike aerosol after sample vaporization may lead to a loss in regard to the sample aerosol. We included the calculation of a transport efficiency *n_trans* through the particle size method using a nano particle standard to correct for this effect. Equations and data processing steps included in the package are based on the Excel sheet RIKILT single particle calculation tool published in [this article](https://pubs.rsc.org/en/content/articlelanding/2015/ja/c4ja00357h).
 
 The package provides measurement data of 
 
 * ionic solutions to establish a linear calibration curve and
-* a nano particle standard of known size.
+* a nano particle standard of a known size.
 
-Import the files form **sp_ionic**. The mean signal of a selected time window is obtained *via* the `get_peakdata()`-function using the peak picking method "mean_signal". `tab_cali()` collects in a *data.frame* with the standard concentrations. To ensure the correct assignment, provide the concentration values in the file names and extract through `extract_unique_number`. The *wf* parameter option "oIDMS" sets the concentration unit to [µg/L].
+Import the files from **sp_ionic**. The mean signal of a selected time window is obtained *via* the `get_peakdata()`-function using the peak picking method "mean signal". `tab_cali()` collects in a *data.frame* with the standard concentrations. To ensure the correct assignment, provide the concentration values in the file names and extract through `extract_unique_number`. The *wf* parameter option "oIDMS" sets the concentration unit to [µg/L].
 
 Calibration parameter are obtained through linear regression.
 
@@ -146,15 +140,15 @@ sp_cali <- get_peakdata(spion_imp,
 
 conc_ion <- extract_unique_number(names(spion_imp))
 sp_cali <- tab_cali(peak_data = sp_cali, wf = wf, std_info = conc_ion)
-sp_cali
+print(sp_cali)
 
 cali_lm <- calc_cali_mod(df = sp_cali[,c(5,4)], wf = wf)
-cali_lm
+print(cali_lm)
 ```
 
 Signal curves of the ionic measurements and the resulting calibration curve are plotted through:
 
-```{r TransportEfficiency_data, out.width='100%', fig.align='center'} 
+```{r TransportEfficiency_data, fig.width=3*3, fig.height=3*2, out.width='75%', fig.align='center'} 
 par(mfrow=c(1,2))
 
 plot(x = c(ps, pe),
@@ -172,9 +166,10 @@ legend(x = "topleft", title = "Conc. [µg/L]",fill = 1:length(spion_imp), legend
 plot(sp_cali[,c(5,4)], pch=21, bg=1:length(spion_imp))
 abline(a = cali_lm[1,3], b = cali_lm[1,1])
 ```
+
 To determine the limit for particle detection *LFD*, import the single particle data and plot the signal distribution with `plot_signal_distribution()`. The *LFD* is shown in red. Use the parameter *ylim* to detect the particle signals. Adjust the *LFD* value to the lower intensity limit of the particle distribution. 
 
-```{r plot_particle_size_distribution}
+```{r plot_particle_size_distribution, fig.width=3*3, fig.height=3*2, out.width='75%', fig.align='center'}
 sp_data <- ETVapp::ETVapp_testdata[[wf]][["sp_particle"]][[1]]
 
 time_col <- "Time"
@@ -189,6 +184,7 @@ if (!is.null(t_fltr) && is.numeric(t_fltr) && t_fltr>min(sp_data[,time_col], na.
 par(mfrow=c(1,1))  
 plot_signal_distribution(x = sp_data_flt[,2], LFD = LFD, style="counts", ylim = c(0, 10))
 ```
+
 Output parameter of the single particle analysis are obtain by `calc_transeff()` and a histogram of the particle size distribution is provided by the following code.
 
 ```{r TransportEfficiency}
@@ -207,7 +203,7 @@ n_trans <- calc_transeff(
 
 print(n_trans)
 ```
-```{r plot_particle_diameter, fig.width=3*2, fig.height=3*2, out.width='100%', fig.align='center'}
+```{r plot_particle_diameter, fig.width=3*2, fig.height=3*2, out.width='50%', fig.align='center'}
 sp_data <- ETVapp::ETVapp_testdata[[wf]][["sp_particle"]][[1]]
 
 plot_particle_diameter(
@@ -261,7 +257,7 @@ print(result_df)
 
 View the mass flow diagram to check the integration of the mass flow peak(s).
 
-```{r mass_flow_plot, fig.width=3*3, fig.height=3*2, out.width='100%', fig.align='center'}
+```{r mass_flow_plot, fig.width=3*3, fig.height=3*1, out.width='100%', fig.align='center'}
 mf_sp <- V_fl * n_trans[,4] * (1 / 60) * (c_sp / DF)
 
 mf_data <- lapply(1:length(samp_ion), function(i) {
@@ -279,9 +275,11 @@ flt <- (min(which(mf_data[[i]][,time_col]>=ps))-cf):(max(which(mf_data[[i]][,tim
     amend = "_BL")
 }) 
 
+smpl_no <- seq(1, length(mf_data))
+
 par(mfrow=c(1,3))
-for (i in 1:length(mf_BL)){
-  plot(x = mf_data[[i]][,"Time"], y = mf_data[[i]][,"mf_s"], type="l", ylab="Mass flow [pg/s]", xlab="Time [s]")
+for (i in 1:length(mf_data)){
+  plot(x = mf_data[[i]][,"Time"], y = mf_data[[i]][,"mf_s"], type="l", ylab="Mass flow [pg/s]", xlab="Time [s]", main = paste("Sample", smpl_no[i]))
   lines(x = mf_BL[[i]][,c("Time")], y = mf_BL[[i]][,3], col = "blue")
   abline(v=c(result_df[i,1:2]), col=grey(0.8))
 }
@@ -309,9 +307,9 @@ LOX_df <- tab_result(LOX_pks, wf = wf, c_sp_unit = "mg/L", K = mean(K), amae = L
 print(LOX_df)
 ```
 
-Mass flow diagrams of the blank measurements are plotted as follows.
+Mass flow diagrams of the blank measurements are plotted as follows. The y-axis label was left out intentionally.
 
-```{r load_blanks, fig.width=3*5, fig.height=3*2, out.width='100%', fig.align='center'}
+```{r load_blanks, fig.width=3*6, fig.height=3*2, out.width='100%', fig.align='center'}
 blk_BL <- lapply(1:length(blk_ion), function(i) {
 flt <- (min(which(blk_ion[[i]][,time_col]>=ps))-cf):(max(which(blk_ion[[i]][,time_col]<=pe))+cf)
   ETVapp:::blcorr_col(
@@ -325,7 +323,7 @@ flt <- (min(which(blk_ion[[i]][,time_col]>=ps))-cf):(max(which(blk_ion[[i]][,tim
 par(mfrow=c(2,5))
 par(mar=c(5,3,0,0)+0.1)
 for (i in 1:min(length(blk_ion), 10)) {
-  plot(x = blk_ion[[i]][,"Time"], y = blk_ion[[i]][,"mf_s"], type="l", main = names(blk_ion)[i], ylab="Mass flow", xlab = "Time [s]")
+  plot(x = blk_ion[[i]][,"Time"], y = blk_ion[[i]][,"mf_s"], type="l", main = names(blk_ion)[i], xlab = "Time [s]")
   lines(x = blk_BL[[i]][,c("Time")], y = blk_BL[[i]][,3], col = "blue")
   abline(abline(v=c(LOX_df[i,1:2]), col=grey(0.8)))
 }
