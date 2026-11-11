@@ -294,41 +294,36 @@ check_peak_boundaries <- function(peak_start, peak_end, time) {
 #' @param minpeakheight A threshold value for peak picking via peak height.
 #' @param cf A correction value for cutting the area around the detected peak.
 #'
-#' @details
-#' tbd
-#'
-#' @return A single row data.frame containing peak information.
+#' @return A single row data.frame containing peak information as index.
 #'
 #' @examples
 #' raw_data <- ETVapp::ETVapp_testdata[["oIDMS"]][["Samples"]][[1]]
 #' df <- process_data(raw_data, c1 = "117Sn", c2 = "80Se", fl = 7)
-#' plot(df[,1:2])
-#' get_peak(df, peak_start = 80, peak_end = 130, PPmethod = "Peak (manual)")
+#' plot(df[,1:2], type="l")
+#' get_peak(df, peak_start = 90, peak_end = 120, PPmethod = "Peak (manual)")
 #'
 #' raw_data <- ETVapp::ETVapp_testdata[["oIDMS"]][[2]][[2]]
 #' df <- process_data(raw_data, c1 = "117Sn", c2 = "122Sn", fl = 7)
 #' plot(df[,c(1,3)], type="l")
-#' (pk <- get_peak(df[,c(1,3)], PPmethod = "Peak (height)", minpeakheight = 10^5, cf=0))
+#' (pk <- get_peak(df[,c(1,3)], PPmethod = "Peak (height)", minpeakheight = 10^4))
 #' abline(v=df[unlist(pk[1,4:5]),1], col=2)
-#' abline(h=10^5, col=3)
+#' abline(h=10^4, col=3)
 #'
 #' @keywords internal
 #' @noRd
 get_peak <- function(df, PPmethod = c("Peak (height)", "Peak (manual)", "mean signal"), peak_start = NULL, peak_end = NULL, minpeakheight = 1000, cf = 50) {
   PPmethod <- match.arg(PPmethod)
   if (PPmethod == "Peak (height)") {
-    #browser()
     x <- df[,2]
     ensure_that(is.numeric(minpeakheight) && minpeakheight > 0, "Please enter a minimum peakheight >0.", opt = "stop")
     if (FALSE) {
-      # $$JL: substituted findpeaks call
-      # this would be the appropriate use of pracma::findpeaks(), however it requires much stronger smoothing
+      # this would be the appropriate use of pracma::findpeaks(), if stronger smoothing is possible
       peak_data <- pracma::findpeaks(x, minpeakheight = minpeakheight, npeaks=3, sortstr=TRUE)
       ensure_that(length(peak_data) >= 1, msg = "No peak found. Adjust the minimal peakheight or try manual peak detection.", opt = "stop")
       ps <- peak_data[1,3]
       pe <- peak_data[1,4]
     } else {
-      # do it exactly as VS by simply accepting many peaks around a global maximum and using the range above a certain height
+      # using the peak range above a certain height
       peak_data <- pracma::findpeaks(x, minpeakheight = minpeakheight)
       ensure_that(length(peak_data) >= 1, msg = "No peak found. Adjust the minimal peakheight or try manual peak detection.", opt = "stop")
       ps <- min(peak_data[,3])
@@ -337,7 +332,7 @@ get_peak <- function(df, PPmethod = c("Peak (height)", "Peak (manual)", "mean si
     n <- length(x)
     peak_data <- data.frame(
       "Peakheight" = max(peak_data[,1]),
-      "Peakstart" = ps, #as index
+      "Peakstart" = ps,
       "Peakend" = pe,
       "Start_corr" = ps - ifelse(ps < cf, ps - 1, cf),
       "End_corr" = pe + ifelse(pe > (n - cf), n - pe, cf),
@@ -351,7 +346,7 @@ get_peak <- function(df, PPmethod = c("Peak (height)", "Peak (manual)", "mean si
     n <- nrow(df)
     peak_data <- data.frame(
       "Peakheight" = NA,
-      "Peakstart" = ps, #as index
+      "Peakstart" = ps,
       "Peakend" = pe,
       "Start_corr" = ps - ifelse(ps < cf, ps - 1, cf),
       "End_corr" = pe + ifelse(pe > (n - cf), n - pe, cf),
@@ -360,8 +355,8 @@ get_peak <- function(df, PPmethod = c("Peak (height)", "Peak (manual)", "mean si
   }
   if (PPmethod == "mean signal") {
     check_peak_boundaries(peak_start=peak_start, peak_end=peak_end, time=df[,1])
-    start_index<- as.numeric(min(which(df[,1] >= peak_start))) #as index
-    end_index <- as.numeric(max(which(df[,1] <= peak_end)))  #as index
+    start_index<- as.numeric(min(which(df[,1] >= peak_start)))
+    end_index <- as.numeric(max(which(df[,1] <= peak_end)))
     peak_data <- data.frame(
       "Isotope" = colnames(df)[2],
       "Start [s]" = peak_start,
@@ -373,12 +368,10 @@ get_peak <- function(df, PPmethod = c("Peak (height)", "Peak (manual)", "mean si
   return(peak_data)
 }
 
-#' Extract a number from a string.
-#'
-#' Often numeric information is stored in character vectors like
+#' @title Extract a number from a string.
+#' @description Often numeric information is stored in character vectors like
 #'     file names. This function will extract such information, focusing on
 #'     numeric values which are different between files.
-#'
 #' @param x Charcter vector, i.e. of file names.
 #' @examples
 #' x <- paste("File123_conc", c(3, 21, 101), "endtext", sep="_")
