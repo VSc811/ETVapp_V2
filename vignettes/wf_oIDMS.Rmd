@@ -182,7 +182,7 @@ if (!is.null(t_fltr) && is.numeric(t_fltr) && t_fltr>min(sp_data[,time_col], na.
 }
 
 par(mfrow=c(1,1))  
-plot_signal_distribution(x = sp_data_flt[,2], LFD = LFD, style="counts", ylim = c(0, 10))
+plot_signal_distribution(x = sp_data_flt[,2], LFD = LFD, ylim = c(0, 10))
 ```
 
 Output parameter of the single particle analysis are obtain by `calc_transeff()` and a histogram of the particle size distribution is provided by the following code.
