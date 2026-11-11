@@ -41,7 +41,7 @@
 #' # import and process cali data of `oIDMS` workflow
 #' spion_imp <- ETVapp::ETVapp_testdata[["oIDMS"]][["sp_ionic"]]
 #' cali_pks <- get_peakdata(spion_imp, int_col = "197Au",
-#'     PPmethod = "mean signal", peak_start = 0.003, peak_end = 60)
+#'     PPmethod = "mean signal", peak_start = 0.006, peak_end = 60)
 #' tab_cali(peak_data = cali_pks, wf = "oIDMS", std_info = c(20, 50, 100, 200, 500))
 #'
 #' @export

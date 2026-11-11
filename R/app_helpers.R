@@ -281,7 +281,7 @@ check_peak_boundaries <- function(peak_start, peak_end, time) {
   ensure_that(is.numeric(peak_start), "Please enter a numeric value as <<Signalstart>>.")
   ensure_that(is.numeric(peak_end), "Please enter a numeric value as <<Signalend>>.")
   ensure_that(peak_start < peak_end, "Please enter a signal start before the signal end.")
-  ensure_that(peak_start <= max(time, na.rm=TRUE) & peak_end >= min(time, na.rm=TRUE), "Please enter signal boundaries within the analysis time or change the peak picking method.")
+  ensure_that(peak_start >= min(time, na.rm=TRUE) & peak_end <= max(time, na.rm=TRUE), "Please enter signal boundaries within the analysis time or change the peak picking method.")
   invisible(NULL)
 }
 

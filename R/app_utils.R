@@ -303,7 +303,7 @@ calc_cali_mod <- function (df, wf = c("ExtCal", "ExtGasCal", "oIDMS"),
 #' head(spion_imp[[1]])
 #' names(spion_imp)
 #' sp_cali <- ldply_base(1:length(spion_imp), function(i) {
-#'   get_peakdata(spion_imp[[i]], "197Au", PPmethod = "mean signal", peak_start = 0.003, peak_end = 60)
+#'   get_peakdata(spion_imp[[i]], "197Au", PPmethod = "mean signal", peak_start = 0.006, peak_end = 60)
 #' })
 #' conc_ion <- c(20, 50, 100, 200, 500)
 #' fac <- 1.661 * 0.01104347 * 12/44
