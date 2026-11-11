@@ -121,9 +121,6 @@ blcorr_col <- function(df, nm = NULL, BLmethod = c("modpolyfit", "none"), deg = 
       if (is.character(nm) && nm %in% colnames(df)) idx <- colnames(df)==nm
       if (is.numeric(nm) && nm %in% 1:ncol(df)) idx <- nm
       nv <- try(baseline::baseline(t(df[,idx,drop=FALSE]), method = BLmethod, deg = deg), silent = TRUE)
-      # $$JL: baseline::baseline sometimes returns NA only for both slots, corrected and baseline
-      # this could (!) be fixed but should it ?
-      # browser()
       if (rval=="corrected") nv <- baseline::getCorrected(nv)[1,]
       if (rval=="baseline") nv <- baseline::getBaseline(nv)[1,]
       if (is.null(amend)) {
@@ -180,7 +177,7 @@ scale_col <- function(df, nm = NULL, std = NULL, amend = NULL) {
 }
 
 #' @title smooth_col.
-#' @description Applies Savitzky-Golay smoothing to a specific column of a data.frame.
+#' @description Applies the polynomial filtering method of Savitzky and Golay from the pracma package to a specific column of a data.frame. A filter length fl = 151 will fit a cubic smoothing spline [stats::smooth.spline()].
 #' @param df Input data.frame with at least one numeric column `nm`.
 #' @param nm Column name of the column to be smoothed or numeric index.
 #' @param fl Filter length of smoother, has to be odd and >=3.
@@ -209,10 +206,8 @@ smooth_col <- function(df, nm = NULL, fl = 5, amend = NULL) {
     if (is.character(nm) && nm %in% colnames(df)) idx <- which(colnames(df)==nm)
     if (is.numeric(nm) && nm[1] %in% 1:ncol(df)) idx <- nm[1]
     if (is.numeric(fl) && fl>=3 && identical(fl %% 2, 1)) {
-      # JL: smoothing should be substituted against smooth.spline
       nv <- try(pracma::savgol(T = df[,idx], fl = fl), silent = TRUE)
       if (fl==151) {
-        # JL: for testing: use fl=151 to try spline smoothing
         nv <- try(stats::smooth.spline(x = df[,idx])$y, silent = TRUE)
       }
       if (is.null(amend)) {
