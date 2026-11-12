@@ -14,7 +14,7 @@ calc_cali_mod(
 \arguments{
 \item{df}{Data.frame with two columns.}
 
-\item{wf}{Calibration method/Workflow (used to make assumptions regarding units in df).}
+\item{wf}{Calibration method/Workflow (used to make assumptions regarding units in the output data.frame).}
 
 \item{ExtCal_unit}{The measurement unit of the ExtCal workflow to correctly format the output.}
 
@@ -24,15 +24,12 @@ calc_cali_mod(
 A data.frame containing slope and intercept with errors and R square.
 }
 \description{
-\code{calc_cali_mod} will provide calibration results based on a linear
-    regression model.
-}
-\details{
-Calculates the calibration model.
-
 A calibration curve is provided by a linear fit of peak areas or mean
     signal intensities against analyte masses or gas flows from a data.frame
     containing at least two entries in rows.
+}
+\details{
+The ouput unit is determined by the workflow. The wf parameter option "oIDMS" sets the concentration unit to µg/L. For "ExtCal" and "ExtGasCal" several orders of magnitude can be entered, respectively.
 }
 \examples{
 df <- data.frame(x=1:5, y=sort(runif(5)))

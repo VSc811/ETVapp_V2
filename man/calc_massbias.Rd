@@ -17,11 +17,11 @@ calc_massbias(R_m, As_iso1, As_iso2)
 Numeric values K for each R_m.
 }
 \description{
-A mass bias correction factor will be determined from measurements
+A mass bias correction factor will be determined from sample or standard measurements
     without added spike.
 }
 \details{
-Calculates the mass bias correction factor K.
+Calculates the mass bias correction factor K to correct isotope ratios of sample measurements with spike.
 
 Ratio of the spike to sample isotope peak area from measurements without spike addition.
 }

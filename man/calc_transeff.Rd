@@ -37,8 +37,6 @@ The transport efficiency will be calculated based on the particle
     size approach from single particle-ICP-MS data.
 }
 \details{
-Calculates the transport efficiency.
-
 Determination of the transport efficiency from measurements with
     gold or silver nano particle standards of known size.
 }

@@ -143,7 +143,6 @@ calc_analyte_mass_as_element <- function(R_m, K, Asp_iso1, Asp_iso2, As_iso1, As
   stopifnot(is.finite(R_As))
   R_corr <- R_m * K
   if (all(R_corr >= R_As)) {
-    #R_corr <- R_m * K
     return((Asp_iso1 - R_corr * Asp_iso2)/(As_iso2 * R_corr - As_iso1) * N_sp)
   } else {
     message("The isotope ratio is below the limit for IDMS calculation. Increase the spike amount or select a more abundant sample isotope.")
@@ -152,9 +151,9 @@ calc_analyte_mass_as_element <- function(R_m, K, Asp_iso1, Asp_iso2, As_iso1, As
 
 #' Calculates the mass bias correction factor K
 #'
-#' Calculates the mass bias correction factor K.
+#' Calculates the mass bias correction factor K to correct isotope ratios of sample measurements with spike.
 #'
-#' @description A mass bias correction factor will be determined from measurements
+#' @description A mass bias correction factor will be determined from sample or standard measurements
 #'     without added spike.
 #'
 #' @param R_m Isotope ratio.
@@ -181,14 +180,14 @@ calc_massbias <- function (R_m, As_iso1, As_iso2) {
   if (length(R_m) > 0 & all(is.finite(c(R_m, As_iso1, As_iso2)))) {
     K <- (As_iso1 / As_iso2) / R_m
   } else {
-    message("Data of the IDMS type 'w/o spike' is required for mass bias determination.")
+    message("At least one isotope ratio and natural isotopic abundances are required for mass bias determination.")
   }
   return(K)
 }
 
-#' Calculates the mass flow mf_sp
+#' Calculates the mass flow
 #'
-#' Calculates the mass flow mf_sp.
+#' Calculates the spike mass flow mf_sp and returns the sample mass flow of a value.
 #'
 #' @param x Input data.
 #' @param n_trans Transport efficiency.
@@ -218,15 +217,12 @@ calc_massflow <- function(x, n_trans = 16.64236, As_iso1 = 7.68, As_iso2 = 4.36,
 
 #' Calculates the calibration model
 #'
-#' Calculates the calibration model.
-#'
-#' @description \code{calc_cali_mod} will provide calibration results based on a linear
-#'     regression model.
-#' @details A calibration curve is provided by a linear fit of peak areas or mean
+#' @description A calibration curve is provided by a linear fit of peak areas or mean
 #'     signal intensities against analyte masses or gas flows from a data.frame
 #'     containing at least two entries in rows.
+#' @details The ouput unit is determined by the workflow. The wf parameter option "oIDMS" sets the concentration unit to µg/L. For "ExtCal" and "ExtGasCal" several orders of magnitude can be entered, respectively.
 #' @param df Data.frame with two columns.
-#' @param wf Calibration method/Workflow (used to make assumptions regarding units in df).
+#' @param wf Calibration method/Workflow (used to make assumptions regarding units in the output data.frame).
 #' @param ExtCal_unit The measurement unit of the ExtCal workflow to correctly format the output.
 #' @param ExtGasCal_unit The measurement unit of the ExtGasCal workflow to correctly format the output.
 #'
@@ -254,7 +250,6 @@ calc_cali_mod <- function (df, wf = c("ExtCal", "ExtGasCal", "oIDMS"),
   wf <- match.arg(wf)
   ExtCal_unit <- match.arg(ExtCal_unit)
   ExtGasCal_unit <- match.arg(ExtGasCal_unit)
-  #browser()
   ExtGasCal_unit <- switch(ExtGasCal_unit,
                  "nL/min" = "s/pg",
                  "\u00b5L/min" = "s/ng",
@@ -282,8 +277,6 @@ calc_cali_mod <- function (df, wf = c("ExtCal", "ExtGasCal", "oIDMS"),
 }
 
 #' Calculates the transport efficiency
-#'
-#' Calculates the transport efficiency.
 #'
 #' @description The transport efficiency will be calculated based on the particle
 #'     size approach from single particle-ICP-MS data.
