@@ -14,7 +14,7 @@ calc_cali_mod(
 \arguments{
 \item{df}{Data.frame with two columns.}
 
-\item{wf}{Calibration method/Workflow (used to make assumptions regarding units in the output data.frame).}
+\item{wf}{Calibration method/workflow (used to make assumptions regarding units in the output data.frame).}
 
 \item{ExtCal_unit}{The measurement unit of the ExtCal workflow to correctly format the output.}
 

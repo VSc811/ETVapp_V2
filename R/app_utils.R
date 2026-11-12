@@ -13,11 +13,14 @@
 # - calc_cali_mod
 # - calc_transeff
 #
-# imported from IsoCor
+# additional functions, e.g. used with Shiny/not implemented
 # - get_iso_info
 # - help_the_user
-# - get_spectrum
+# - ensure_that
+# - extract_shift_and_cut
 # - spec_pre_process
+# - limit_digits
+# - find_peak_boundaries
 
 #' Base-R ldply implementation
 #'
@@ -65,7 +68,6 @@ laply_base <- function(.data, .fun, ..., .drop = TRUE) {
 #'
 #' A base R implementation to sort strings according to first number within string.
 #'
-#' @title str_sort_num
 #' @param x character vector.
 #' @examples
 #' x <- paste0("File", c(20, 1, 9, 11, 32, 100))
@@ -105,7 +107,7 @@ str_sort_num <- function(x) {
 #'
 #' Calculate the spike amount N_sp to compute the on-line IDMS equation.
 #'
-#' @details The unit of the spike concentration is automatically assigned through by generating the result table.
+#' @details The unit of the spike concentration is automatically assigned by generating the result table.
 #' @seealso [tab_result()] for unit assignement in \code{vignette("wf_oIDMS", package = "ETVapp")}.
 #' @param c_sp Concentration of the spike isotope in spike stock solution.
 #' @param V_sp Volume of spike solution in µL.
@@ -122,7 +124,7 @@ calc_N_sp <- function(c_sp, V_sp, VF1, M_sp, M_sa) {
 
 #' Calculate the analyte mass as element
 #'
-#' Calculate the analyte mass as element.
+#' Calculate the analyte mass using the IDMS equation. Molecular structures are not taken into account.
 #'
 #' @param R_m A vector of isotope ratios.
 #' @param K Massbias correction factor.
@@ -151,16 +153,12 @@ calc_analyte_mass_as_element <- function(R_m, K, Asp_iso1, Asp_iso2, As_iso1, As
 
 #' Calculates the mass bias correction factor K
 #'
-#' Calculates the mass bias correction factor K to correct isotope ratios of sample measurements with spike.
-#'
 #' @description A mass bias correction factor will be determined from sample or standard measurements
 #'     without added spike.
 #'
 #' @param R_m Isotope ratio.
 #' @param As_iso1 Natural abundance of the spike isotope.
 #' @param As_iso2 Natural abundance of the sample isotope.
-#'
-#' @details Ratio of the spike to sample isotope peak area from measurements without spike addition.
 #'
 #' @return Numeric values K for each R_m.
 #'
@@ -187,7 +185,7 @@ calc_massbias <- function (R_m, As_iso1, As_iso2) {
 
 #' Calculates the mass flow
 #'
-#' Calculates the spike mass flow mf_sp and returns the sample mass flow of a value.
+#' Calculates the spike mass flow mf_sp and returns the sample mass flow of a value using the IDMS equation.
 #'
 #' @param x Input data.
 #' @param n_trans Transport efficiency.
@@ -222,7 +220,7 @@ calc_massflow <- function(x, n_trans = 16.64236, As_iso1 = 7.68, As_iso2 = 4.36,
 #'     containing at least two entries in rows.
 #' @details The ouput unit is determined by the workflow. The wf parameter option "oIDMS" sets the concentration unit to µg/L. For "ExtCal" and "ExtGasCal" several orders of magnitude can be entered, respectively.
 #' @param df Data.frame with two columns.
-#' @param wf Calibration method/Workflow (used to make assumptions regarding units in the output data.frame).
+#' @param wf Calibration method/workflow (used to make assumptions regarding units in the output data.frame).
 #' @param ExtCal_unit The measurement unit of the ExtCal workflow to correctly format the output.
 #' @param ExtGasCal_unit The measurement unit of the ExtGasCal workflow to correctly format the output.
 #'
@@ -414,8 +412,8 @@ help_the_user <- function(filename) {
   invisible(NULL)
 }
 
-#' Error handling.
-#' @description ensure_that.
+#' Error handling
+#' @description Used with Shiny.
 #' @param test Name of the file as string (if necessary, containing also path).
 #' @param msg msg.
 #' @param opt opt.

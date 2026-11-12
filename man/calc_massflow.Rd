@@ -39,7 +39,7 @@ calc_massflow(
 A numeric vector.
 }
 \description{
-Calculates the spike mass flow mf_sp and returns the sample mass flow of a value.
+Calculates the spike mass flow mf_sp and returns the sample mass flow of a value using the IDMS equation.
 }
 \examples{
 calc_massflow(1:10)

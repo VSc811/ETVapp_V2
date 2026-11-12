@@ -20,11 +20,6 @@ Numeric values K for each R_m.
 A mass bias correction factor will be determined from sample or standard measurements
     without added spike.
 }
-\details{
-Calculates the mass bias correction factor K to correct isotope ratios of sample measurements with spike.
-
-Ratio of the spike to sample isotope peak area from measurements without spike addition.
-}
 \examples{
 mb_imp <- ETVapp::ETVapp_testdata[["oIDMS"]][["Massbias"]]
 

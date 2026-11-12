@@ -21,7 +21,7 @@ calc_N_sp(c_sp, V_sp, VF1, M_sp, M_sa)
 Calculate the spike amount N_sp to compute the on-line IDMS equation.
 }
 \details{
-The unit of the spike concentration is automatically assigned through by generating the result table.
+The unit of the spike concentration is automatically assigned by generating the result table.
 }
 \seealso{
 [tab_result()] for unit assignement in \code{vignette("wf_oIDMS", package = "ETVapp")}.
