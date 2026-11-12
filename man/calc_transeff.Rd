@@ -21,7 +21,7 @@ calc_transeff(
 
 \item{LFD}{Intensity limit for the detection of particle signals.}
 
-\item{cali_slope}{Calibration lm slope result for ionic standards.}
+\item{cali_slope}{Calibration slope result for ionic standards.}
 
 \item{V_fl}{Sample inlet flow in mL/min.}
 
@@ -37,8 +37,8 @@ The transport efficiency will be calculated based on the particle
     size approach from single particle-ICP-MS data.
 }
 \details{
-Determination of the transport efficiency from measurements with
-    gold or silver nano particle standards of known size.
+Determination of the transport efficiency from measurements with a
+    gold or silver nano particle standard of a known size. Densities of gold and silver are implemented in the function.
 }
 \examples{
 spion_imp <- ETVapp::ETVapp_testdata[["oIDMS"]][["sp_ionic"]]
@@ -59,5 +59,5 @@ sp_data <- ETVapp::ETVapp_testdata[["oIDMS"]][["sp_particle"]][[1]]
 sp_data_flt <- sp_data[sp_data[,"Time"]<60,]
 
 (n_trans <- calc_transeff(sp_data, int_col = "197Au", LFD = 20000, cali_slope,
-  V_fl = 0.0075, part_mat = c("Au", "Ag"), dia_part = 60))
+  V_fl = 0.0075, part_mat = "Au", dia_part = 60))
 }
