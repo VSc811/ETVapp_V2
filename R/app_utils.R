@@ -1,6 +1,6 @@
 # exported functions that solve minor problems
 #
-# # function reimplementations (to avoid dependencies)
+# function reimplementations (to avoid dependencies)
 # - ldply_base
 # - laply_base
 # - str_sort_num
@@ -101,12 +101,14 @@ str_sort_num <- function(x) {
   x[do.call(order, key_df)]
 }
 
-#' Calculate the N_sp parameter
+#' Calculate the spike amount N_sp
 #'
-#' Calculate the N_sp parameter.
+#' Calculate the spike amount N_sp to compute the on-line IDMS equation.
 #'
-#' @param c_sp Concentration of spike isotope in spike stock solution [mg/L].
-#' @param V_sp Volume of spike solution [µL].
+#' @details The unit of the spike concentration is automatically assigned through by generating the result table.
+#' @seealso [tab_result()] for unit assignement in \code{vignette("wf_oIDMS", package = "ETVapp")}.
+#' @param c_sp Concentration of the spike isotope in spike stock solution.
+#' @param V_sp Volume of spike solution in µL.
 #' @param VF1 Dilution factor of spike solution.
 #' @param M_sp Molar mass of spike.
 #' @param M_sa Molar mass of sample.
@@ -114,7 +116,7 @@ str_sort_num <- function(x) {
 #' @export
 calc_N_sp <- function(c_sp, V_sp, VF1, M_sp, M_sa) {
   stopifnot(is.finite(c(c_sp, V_sp, VF1, M_sp, M_sa)))
-  N_sp <- ((c_sp / VF1 * V_sp) / M_sp) * M_sa #c_sp in mg/L, V_sp in µL
+  N_sp <- ((c_sp / VF1 * V_sp) / M_sp) * M_sa
   return(N_sp)
 }
 
