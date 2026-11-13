@@ -20,7 +20,7 @@ tab_LOX(
 
 \item{cali_slope}{A slope from the calibration data.}
 
-\item{wf}{Calibration method/Workflow.}
+\item{wf}{Calibration method/workflow.}
 
 \item{ExtCal_unit}{The standard concentration unit used in the ExtCal workflow to correctly format the output.}
 
@@ -30,7 +30,7 @@ tab_LOX(
 
 \item{mass_fraction2}{Mass fraction of the analyte element in the analyte component.}
 
-\item{sample_mass}{A (theoretical) sample mass.}
+\item{sample_mass}{A (theoretical) sample mass in mg.}
 }
 \value{
 A data.frame.

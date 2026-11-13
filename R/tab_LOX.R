@@ -9,9 +9,9 @@
 #'
 #' @param x Variable containing the numeric data to compute the standard deviation (either peak area (for ExtCal/ExtGasCal) or analyte mass (for IDMS/oIDMS)).
 #' @param cali_slope A slope from the calibration data.
-#' @param wf Calibration method/Workflow.
+#' @param wf Calibration method/workflow.
 #' @param mass_fraction2 Mass fraction of the analyte element in the analyte component.
-#' @param sample_mass A (theoretical) sample mass.
+#' @param sample_mass A (theoretical) sample mass in mg.
 #' @param ExtCal_unit The standard concentration unit used in the ExtCal workflow to correctly format the output.
 #' @param ExtGasCal_unit The standard concentration unit used in the ExtGasCal workflow to correctly format the output.
 #' @param c_sp_unit The concentration unit of the spike stock solution used in the IDMS/oIDMS workflows to correctly format the output.

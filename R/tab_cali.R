@@ -6,10 +6,7 @@
 #'     volume flows in mass flows. A conversion factor (1000/60, e.g. mL/min to µL/s) is
 #'     implemented in the function.
 #'
-#' @param peak_data Data.frame containing peak information.
-#' @param wf Calibration method/Workflow.
-#' @param ExtCal_unit The measurement unit of the ExtCal workflow to correctly format the output.
-#' @param ExtGasCal_unit The measurement unit of the ExtGasCal workflow to correctly format the output.
+#' @inheritParams tab_result
 #' @param std_info A numeric value giving the analyte mass (ExtCal), the concentration of an ionic standard solution in µg/L (oIDMS) or the gas flow of calibration gas (ExtGasCal).
 #' @param fac A factor to convert the gas flow (gas_density x mass_fraction x mass_percentage).
 #'

@@ -16,11 +16,11 @@ tab_cali(
 \arguments{
 \item{peak_data}{Data.frame containing peak information.}
 
-\item{wf}{Calibration method/Workflow.}
+\item{wf}{Calibration method/workflow.}
 
-\item{ExtCal_unit}{The measurement unit of the ExtCal workflow to correctly format the output.}
+\item{ExtCal_unit}{The standard concentration unit used in the ExtCal workflow to correctly format the output.}
 
-\item{ExtGasCal_unit}{The measurement unit of the ExtGasCal workflow to correctly format the output.}
+\item{ExtGasCal_unit}{The standard concentration unit used in the ExtGasCal workflow to correctly format the output.}
 
 \item{std_info}{A numeric value giving the analyte mass (ExtCal), the concentration of an ionic standard solution in µg/L (oIDMS) or the gas flow of calibration gas (ExtGasCal).}
 

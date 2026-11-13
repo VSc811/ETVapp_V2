@@ -21,7 +21,7 @@ tab_result(
 \arguments{
 \item{peak_data}{Data.frame containing peak information.}
 
-\item{wf}{Calibration method/Workflow.}
+\item{wf}{Calibration method/workflow.}
 
 \item{ExtCal_unit}{The standard concentration unit used in the ExtCal workflow to correctly format the output.}
 
@@ -39,7 +39,7 @@ tab_result(
 
 \item{mass_fraction2}{Mass fraction of the analyte element in the analyte component.}
 
-\item{sample_mass}{A (theoretical) sample mass.}
+\item{sample_mass}{A (theoretical) sample mass in mg.}
 }
 \value{
 A data.frame.
