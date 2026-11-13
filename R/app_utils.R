@@ -220,9 +220,7 @@ calc_massflow <- function(x, n_trans = 16.64236, As_iso1 = 7.68, As_iso2 = 4.36,
 #'     containing at least two entries in rows.
 #' @details The ouput unit is determined by the workflow. The wf parameter option "oIDMS" sets the concentration unit to µg/L. For "ExtCal" and "ExtGasCal" several orders of magnitude can be entered, respectively.
 #' @param df Data.frame with two columns.
-#' @param wf Calibration method/workflow (used to make assumptions regarding units in the output data.frame).
-#' @param ExtCal_unit The measurement unit of the ExtCal workflow to correctly format the output.
-#' @param ExtGasCal_unit The measurement unit of the ExtGasCal workflow to correctly format the output.
+#' @inheritParams tab_LOX
 #'
 #' @return A data.frame containing slope and intercept with errors and R square.
 #'

@@ -91,10 +91,10 @@ for (i in 1:9) {
 ```
 
 Peak areas are plotted against the gas flows. Calibration parameter obtained 
-through linear regression are provided as output *data.frame*.
+through linear regression are provided as output *data.frame*. *ExtGasCal_unit* ensures a correct unit output.
 
 ```{r calibration_model, fig.width=3, fig.height=3}
-cm <- calc_cali_mod(df = cali_peaks[,c(6,4)], wf = wf)
+cm <- calc_cali_mod(df = cali_peaks[,c(6,4)], wf = wf, ExtGasCal_unit = ExtGasCal_unit)
 print(cm)
 
 plot(cali_peaks[,c(6,4)])

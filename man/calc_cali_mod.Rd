@@ -14,11 +14,11 @@ calc_cali_mod(
 \arguments{
 \item{df}{Data.frame with two columns.}
 
-\item{wf}{Calibration method/workflow (used to make assumptions regarding units in the output data.frame).}
+\item{wf}{Calibration method/workflow.}
 
-\item{ExtCal_unit}{The measurement unit of the ExtCal workflow to correctly format the output.}
+\item{ExtCal_unit}{The standard concentration unit used in the ExtCal workflow to correctly format the output.}
 
-\item{ExtGasCal_unit}{The measurement unit of the ExtGasCal workflow to correctly format the output.}
+\item{ExtGasCal_unit}{The standard concentration unit used in the ExtGasCal workflow to correctly format the output.}
 }
 \value{
 A data.frame containing slope and intercept with errors and R square.

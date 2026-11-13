@@ -99,10 +99,10 @@ for (i in 1:6) {
 }
 ```
 
-Peak areas are plotted against the analyte mass. Calibration parameter obtained through linear regression are provided as output *data.frame*.
+Peak areas are plotted against the analyte mass. Calibration parameter obtained through linear regression are provided as output *data.frame*. Units are rendered through the parameter *ExtCal_unit*.
 
 ```{r calibration_model, fig.width=3, fig.height=3}
-cm <- calc_cali_mod(df = cali_peaks[,c(6,4)], wf = wf)
+cm <- calc_cali_mod(df = cali_peaks[,c(6,4)], wf = wf, ExtCal_unit = ExtCal_unit)
 print(cm)
 par(mfrow=c(1,1))
 plot(cali_peaks[,c(6,4)])
