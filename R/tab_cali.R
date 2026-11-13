@@ -1,9 +1,9 @@
 #' Tabulate calibration data.
 #'
-#' Transfer standard information to a data.frame containing peak/signal data.
+#' Transfers standard information to a data.frame containing peak/signal data. The unit of the standard concentration is assigned through unit parameters (ExtCal/ExtGasCal).
 #'
-#' @details Selecting "ExtGasCal" enables the input of a conversion factor to
-#'     calculate the gas flows. A conversion factor (mL/min to µL/s) is
+#' @details Selecting "ExtGasCal" enables the input of a factor to convert
+#'     volume flows in mass flows. A conversion factor (1000/60, e.g. mL/min to µL/s) is
 #'     implemented in the function.
 #'
 #' @param peak_data Data.frame containing peak information.
