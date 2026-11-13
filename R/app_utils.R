@@ -205,7 +205,7 @@ calc_massbias <- function (R_m, As_iso1, As_iso2) {
 #' @export
 calc_massflow <- function(x, n_trans = 16.64236, As_iso1 = 7.68, As_iso2 = 4.36, Asp_iso1 = 91.06, Asp_iso2 = 0.08, V_fl = 0.0075, c_sp = 19581.71, DF = 20) {
   ensure_that(
-    min(x) < (As_iso1 / As_iso2),
+    min(x) > (As_iso1 / As_iso2),
     "The minimum isotope ratio is below the required value for IDMS calculation. Increasing spike amount or selection of different isotopes is necessary.",
     "message"
   )
@@ -413,7 +413,8 @@ help_the_user <- function(filename) {
 }
 
 #' Error handling
-#' @description Used with Shiny.
+#' @description If test is TRUE, the function terminates. If test is FALSE, the function
+#'                continues and carries out the action based on opt.
 #' @param test Name of the file as string (if necessary, containing also path).
 #' @param msg msg.
 #' @param opt opt.
