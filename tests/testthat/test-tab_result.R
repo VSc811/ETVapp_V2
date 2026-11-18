@@ -3,20 +3,21 @@ testthat::test_that(
   code = {
     pd <- data.frame("A"=1:3,"B"=1:3,"R_m"=1:3,"col4"=1:3)
     pd2 <- data.frame("A"=1:3,"B"=1:3,"R_m"=10^(-4),"col4"=1:3)
-    tab1 <- tab_result(peak_data=pd, wf="ExtCal")
-    tab2 <- tab_result(peak_data=pd, wf="IDMS", c_sp_unit="g/L")
+    tab1 <- tab_result(peak_data=pd, wf="ExtCal", a = 0.5, b = 2)
+    tab2 <- tab_result(peak_data=pd, wf="IDMS", K = 1.2, amae = 2, c_sp_unit="g/L")
     tab3 <- tab_result(peak_data=pd, wf="IDMS", c_sp_unit="mg/L", mass_fraction2 = 10^(-3))
-    tab4 <- tab_result(peak_data=pd2, wf="IDMS", c_sp_unit="mg/L", amae = 10^(-4), mass_fraction2 = 0.5)
+    tab4 <- tab_result(peak_data=pd2, wf="IDMS", c_sp_unit="mg/L", amae = 10^(-4), mass_fraction2 = 10^(-3), sample_mass = 2)
 
     testthat::expect_true(is.data.frame(tab1))
     testthat::expect_equal(ncol(tab1), 7)
-    testthat::expect_equal(tab1[,4], tab1[,5])
+    testthat::expect_equal(tab1[,5], (tab1[,4] - 0.5) / 2)
     testthat::expect_true(all(grepl("pg", names(tab1)[c(5)])))
     testthat::expect_true(all(grepl("ppb", names(tab1)[c(7)])))
 
     testthat::expect_true(is.data.frame(tab2))
     testthat::expect_equal(ncol(tab2), 8)
-    testthat::expect_equal(tab2[,c("R_m")], tab2[,c("R_corr")])
+    testthat::expect_equal(tab2[,c("R_m")] * 1.2, tab2[,c("R_corr")])
+    testthat::expect_equal(rep(2, nrow(tab2)), tab2[,6])
     testthat::expect_true(all(grepl("\u00b5g", names(tab2)[c(6)])))
     testthat::expect_equal(tab2[,c(8)], tab2[,c(6)] / (tab2[,c(7)] * 10))
 
@@ -28,8 +29,8 @@ testthat::test_that(
 
     testthat::expect_true(is.data.frame(tab4))
     testthat::expect_equal(ncol(tab4), 11)
-    testthat::expect_equal(tab4[,c(6)], tab4[,c(5)] * 10^(3))
-    testthat::expect_equal(tab4[,c(11)], tab4[,c(5)] / tab4[,c(8)] / tab4[,c(9)] * 10^(3))
+    testthat::expect_equal(tab4[,c(6)], rep(10^(-4), nrow(tab4)) * 10^(3))
+    testthat::expect_equal(tab4[,c(11)], rep(10^(-4), nrow(tab4)) / tab4[,c(8)] / tab4[,c(9)] * 10^(3))
     testthat::expect_true(all(grepl("pg", names(tab4)[c(6,7)])))
     testthat::expect_true(all(grepl("ppb", names(tab4)[c(10,11)])))
   }
