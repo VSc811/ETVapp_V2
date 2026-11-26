@@ -44,7 +44,7 @@ head(pro_data[[1]])
 lines(pro_data[[1]], col=3)
 
 head(process_data(imp[[1]], c1 = "13C", c2 = "80Se", fl = 9, amend = TRUE))
-head(process_data(imp[[1]], c1 = "13C", c2 = "80Se", amend = TRUE))
+head(process_data(imp[[1]], c1 = "13C", c2 = "80Se", fl = 1, amend = TRUE))
 
 # test all error messages
 \dontrun{

@@ -216,12 +216,7 @@ smooth_col <- function(df, nm = NULL, fl = 5, amend = NULL) {
         df[,paste0(colnames(df)[idx], amend)] <- nv
       }
     } else {
-      if (is.null(amend)) {
         message("Parameter 'fl' should be an odd integer >=3. Omitting smoothing step.")
-      } else {
-        message("Parameter 'fl' should be an odd integer >=3. Amending original data.")
-        df[,paste0(colnames(df)[idx], amend)] <- df[,idx]
-      }
     }
   }
   return(df)

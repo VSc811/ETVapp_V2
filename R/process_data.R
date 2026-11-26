@@ -22,7 +22,7 @@
 #' lines(pro_data[[1]], col=3)
 #'
 #' head(process_data(imp[[1]], c1 = "13C", c2 = "80Se", fl = 9, amend = TRUE))
-#' head(process_data(imp[[1]], c1 = "13C", c2 = "80Se", amend = TRUE))
+#' head(process_data(imp[[1]], c1 = "13C", c2 = "80Se", fl = 1, amend = TRUE))
 #'
 #' # test all error messages
 #' \dontrun{
@@ -51,7 +51,7 @@ process_data <- function(data, wf = c("ExtCal", "ExtGasCal", "IDMS", "oIDMS"), c
           out <- smooth_col(df = out, nm = c1, fl = fl, amend = if (amend) "_smooth" else NULL)
           out <- smooth_col(df = out, nm = c2, fl = fl, amend = if (amend) "_smooth" else NULL)
           # perform scaling (of smoothed columns if smoothing was performed)
-          test <- amend & !is.null(fl)
+          test <- amend & (fl >=3)
           out <- scale_col(df = out, nm = ifelse(test, paste0(c1, "_smooth"), c1), std = ifelse(test, paste0(c2, "_smooth"), c2), amend = if (amend) "_scale" else NULL)
         } else {
           message("Column c2 '", c2, "' not found. Correction step omitted.")

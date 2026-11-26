@@ -5,7 +5,7 @@ testthat::test_that(
     pro_data <- process_data(imp, c1 = "13C", c2 = "80Se", fl = 151)
     amend_data <- process_data(imp, c1 = "13C", c2 = "80Se", fl = 151, amend = TRUE)
     smooth_data <- process_data(imp, c1 = "13C", c2 = NULL, fl = 151, amend = TRUE)
-    scale_data <- process_data(imp, c1 = "13C", c2 = "80Se", amend = TRUE)
+    scale_data <- process_data(imp, c1 = "13C", c2 = "80Se", fl = 1, amend = TRUE)
 
     iso_imp <- ETVapp::ETVapp_testdata[["oIDMS"]][['Samples']][[1]]
     iso_data <- process_data(iso_imp, wf = "oIDMS", c1 = "117Sn", c2 = "122Sn", fl = 5, amend = TRUE)
@@ -14,11 +14,6 @@ testthat::test_that(
     testthat::expect_equal(names(pro_data), c("Time", "13C", "80Se"))
     testthat::expect_equal(names(amend_data), c("Time", "13C", "80Se", "13C_smooth", "80Se_smooth", "13C_smooth_scale"))
     testthat::expect_equal(names(smooth_data), c("Time", "13C", "13C_smooth"))
-    # VS: This should be the output when the smoothing step is omitted.
-    #       "13C_smooth_scale" is misleading, when the data is not smoothed.
-    #       If amend is "TRUE" and smoothing is omnitted, original data should not be amended in smooth_col.
-    # $$JL: I did this for simplicity, because this way within the app we can take a column '_smooth' for granted even when data was not smoothed
-    # $$JL: However, I changed this now and probably need to fix the app next
     testthat::expect_equal(names(scale_data), c("Time", "13C", "80Se", "13C_scale"))
 
     testthat::expect_equal(names(iso_data), c("Time", "117Sn", "122Sn", "117Sn_smooth", "122Sn_smooth", "R_m"))
