@@ -1,11 +1,12 @@
 testthat::test_that(
   desc = "Test that process_data works",
   code = {
-    imp <- ETVapp::ETVapp_testdata[['ExtGasCal']][['Samples']][[1]]
-    pro_data <- process_data(imp, c1 = "13C", c2 = "80Se", fl = 151)
-    amend_data <- process_data(imp, c1 = "13C", c2 = "80Se", fl = 151, amend = TRUE)
-    smooth_data <- process_data(imp, c1 = "13C", c2 = NULL, fl = 151, amend = TRUE)
-    scale_data <- process_data(imp, c1 = "13C", c2 = "80Se", fl = 1, amend = TRUE)
+    imp <- ETVapp::ETVapp_testdata[['ExtGasCal']][['Samples']]
+    pro_data <- process_data(imp[[1]], c1 = "13C", c2 = "80Se", fl = 151)
+    amend_data <- process_data(imp[[1]], c1 = "13C", c2 = "80Se", fl = 151, amend = TRUE)
+    smooth_data <- process_data(imp[[1]], c1 = "13C", c2 = NULL, fl = 151, amend = TRUE)
+    scale_data <- process_data(imp[[1]], c1 = "13C", c2 = "80Se", fl = 1, amend = TRUE)
+    list_data <- process_data(imp, c1 = "13C", c2 = "80Se", fl = 151)
 
     iso_imp <- ETVapp::ETVapp_testdata[["oIDMS"]][['Samples']][[1]]
     iso_data <- process_data(iso_imp, wf = "oIDMS", c1 = "117Sn", c2 = "122Sn", fl = 5, amend = TRUE)
@@ -20,11 +21,14 @@ testthat::test_that(
 
     testthat::expect_equal(amend_data[100,"13C_smooth_scale"], c(amend_data[100,"13C_smooth"]*mean(amend_data[100,"80Se_smooth"], na.rm=TRUE)/amend_data[100,"80Se_smooth"]), tolerance = 0.1)
     testthat::expect_equal(iso_data[100,"R_m"], c(iso_data[100,"117Sn_smooth"]/iso_data[100,"122Sn_smooth"]), tolerance = 0.01)
+
+    testthat::expect_true(is.list(list_data))
     })
 
 testthat::test_that(
-  desc = "Test that process_data message works",
+  desc = "Test that process_data messages works",
   code = {
+    testthat::expect_error(process_data(ETVapp::ETVapp_testdata[['ExtGasCal']][['Samples']][[1]], c1 = "test", c2 = "12C", fl = 5))
     testthat::expect_message(process_data(ETVapp::ETVapp_testdata[['ExtGasCal']][['Samples']][[1]], c1 = "13C", c2 = "12C", fl = 5))
     }
 )
