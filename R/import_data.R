@@ -73,6 +73,7 @@ import_data <- function (file_path, simplify = TRUE) {
           if (any(flt)) { raw_data <- raw_data[!flt,] }
           raw_data <- apply(raw_data, 2, as.numeric)
           colnames(raw_data) <- gsub("^X", "", colnames(raw_data))
+          if (all(grep("Time", colnames(raw_data))==1)) colnames(raw_data)[1] <- "Time" else message("Check format of Multicollector file. Possible incorrect 'Time' column.")
           raw_data <- as.data.frame(raw_data)
 
         } else {
